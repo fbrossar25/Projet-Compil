@@ -49,7 +49,8 @@ extern int yydebug;
     OPERATOR = 259,
     NUMBER = 260,
     TYPE = 261,
-    UMINUS = 262
+    STENCIL = 262,
+    UMINUS = 263
   };
 #endif
 /* Tokens.  */
@@ -57,7 +58,8 @@ extern int yydebug;
 #define OPERATOR 259
 #define NUMBER 260
 #define TYPE 261
-#define UMINUS 262
+#define STENCIL 262
+#define UMINUS 263
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -70,7 +72,7 @@ union YYSTYPE
   int value;
   struct ast* ast;
 
-#line 74 "y.tab.h" /* yacc.c:1909  */
+#line 76 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

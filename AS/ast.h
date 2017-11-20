@@ -21,7 +21,7 @@ typedef struct ast {
 } ast;
 
 ast* ast_new_operation(char*, ast*, ast*);
-ast* ast_new_declaration(char*, ast*);
+ast* ast_new_declaration(char* op, ast* right);
 ast* ast_new_number(int);
 ast* ast_new_id(char*);
 void ast_print(ast*, int);

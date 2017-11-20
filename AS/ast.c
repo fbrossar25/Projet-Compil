@@ -22,6 +22,7 @@ ast* ast_new_id(char* id) {
   return new;
 }
 
+
 void ast_print(ast* ast, int indent) {
   if(ast == NULL)
     return;
@@ -33,6 +34,16 @@ void ast_print(ast* ast, int indent) {
     printf(" (%d)\n", ast->u.number);
   else if (strcmp(ast->type, "id") == 0)
     printf(" (%s)\n", ast->u.id);
+  else if (strcmp(ast->type, "TYPE") == 0)
+  {
+	printf(" (int)\n");
+	ast_print(ast->u.operation.right, indent + 1);  
+  }
+   else if (strcmp(ast->type, "STENCIL") == 0)
+  {
+	printf(" (stencil)\n");
+	ast_print(ast->u.operation.right, indent + 1);  
+  }
   else {
     printf("\n");
     ast_print(ast->u.operation.left, indent + 1);
@@ -40,6 +51,3 @@ void ast_print(ast* ast, int indent) {
   }
 }
 
-ast* ast_new_declaration(char*, ast*) {
-  
-}
