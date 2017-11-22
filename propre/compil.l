@@ -10,21 +10,27 @@
 
 %}
 
-ID 		[a-zA-Z_][a-zA-Z0-9_]
+ID 		[a-zA-Z_][a-zA-Z0-9_]*
 ENTIER 	[0-9]+
 COMMENTAIRE "/*"([^*]*[*]+[*]*[^*/])*[^*]*[*]+"/"
-OPERATEUR "-"|"+"|"*"|"/"|"<"|">"|"<="|">="|"=="|"&&"|"||"
+OPERATEUR "-"|"+"|"*"|"/"|"<"|">"
 TYPE 	"int"
+BLANCS [[:blank:]]+
 
 %%
 
-{TYPE}          { yylval.string = strdup(yytext);   return TYPE; }
-{OPERATEUR}     { yylval.string = strdup(yytext);   return OPERATEUR; }
-{ID}		    { yylval.string = strdup(yytext);   return ID; }
-{ENTIER}     	{ yylval.entier = atoi(yytext);     return ENTIER; }
+<<EOF>>         { return END; }
+{TYPE}          { return TYPE; }
+"=="            { return OP_EGAL; }
+"!="            { return OP_DIFF; }
+">="            { return OP_SUPEG; }
+"<="            { return OP_INFEG; }
+{OPERATEUR}     { return yytext[0]; }
+{ID}        		{ yylval.string = strdup(yytext);   return ID; }
+{ENTIER}     	  { yylval.entier = atoi(yytext);     return ENTIER; }
 {COMMENTAIRE}   { }
-[()]      	    { return yytext[0]; }          
-[\n]            { return yytext[0]; }
-.               { printf("Caractere inconnu: %s\n", yytext); }
+{BLANCS}        { return BLANCS; }
+[(){};]      	  { return yytext[0]; } 
+.               { printf("non reconnus: %s\n", yytext); }
 
 %%
