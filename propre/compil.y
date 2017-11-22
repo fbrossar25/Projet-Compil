@@ -13,44 +13,71 @@
   int entier;
 }
 
+%token END
+%token OP_EGAL
+%token OP_DIFF
+%token OP_SUPEG
+%token OP_INFEG
+%token BLANCS
 %token <string> ID
-%token <string> OPERATEUR
 %token <entier> ENTIER
-%token <string> TYPE
+%token TYPE
 
 %right '='
 %left '+' '-'
 %left '*' '/'
 %left "<=" ">=" '<' '>' "==" "!="
-%left "||"
-%left "&&"
 %left UMOINS '!'
 
 %%
 
 axiom:
-        fonction '\n'
+        fonction
         { 
-            printf("Chaine reconnue !\n");
+            printf("fonction reconnue !\n");
 	        exit(0);
         }
-    |   fonction
+    |   instruction
         { 
-            printf("Chaine reconnue !\n");
+            printf("instruction reconnue !\n");
 	        exit(0);
         }
-    |   ID '\n'
-        {
-            printf("ID(%s)\n",$1);
-            exit(0);
-        }
+    ;
 
 fonction:
-        TYPE ID '(' ')' '{' '}'
+        TYPE  ID '(' ')' '{' instruction '}'
         {
             printf("fonction\n");
         }
+    |   TYPE BLANCS ID '(' ')' '{' '}' '\n'
+        {
+            printf("fonction\n");
+        }
+    ;
 
+instruction:
+        expr ';'
+    |   declaration ';'
+    ;
+
+declaration:
+        TYPE BLANCS ID
+    ;
+
+expr:
+        expr '+' expr
+        {
+            printf("OPERATEUR(+)\n");
+        }
+    |   ENTIER
+        {
+            printf("ENTIER(%d)\n",$1);
+        }
+    |   ID
+        {
+            printf("ID(%s)\n",$1);
+        }
+    ;
 	
 %%
 

@@ -45,19 +45,29 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    ID = 258,
-    OPERATEUR = 259,
-    ENTIER = 260,
-    TYPE = 261,
-    UMOINS = 268
+    END = 258,
+    OP_EGAL = 259,
+    OP_DIFF = 260,
+    OP_SUPEG = 261,
+    OP_INFEG = 262,
+    BLANCS = 263,
+    ID = 264,
+    ENTIER = 265,
+    TYPE = 266,
+    UMOINS = 271
   };
 #endif
 /* Tokens.  */
-#define ID 258
-#define OPERATEUR 259
-#define ENTIER 260
-#define TYPE 261
-#define UMOINS 268
+#define END 258
+#define OP_EGAL 259
+#define OP_DIFF 260
+#define OP_SUPEG 261
+#define OP_INFEG 262
+#define BLANCS 263
+#define ID 264
+#define ENTIER 265
+#define TYPE 266
+#define UMOINS 271
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -69,7 +79,7 @@ union YYSTYPE
   char* string;
   int entier;
 
-#line 73 "y.tab.h" /* yacc.c:1909  */
+#line 83 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
