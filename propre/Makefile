@@ -5,9 +5,10 @@ input=input.txt
 link=-ly -ll
 arg=-g -std=c99
 generated=y.tab.c lex.yy.c y.tab.h
+YACC=yacc -d -Wall -v
 
 all: mrproper
-	yacc -d $(prefixe).y
+	$(YACC) $(prefixe).y
 	lex $(prefixe).l
 	gcc $(arg) $(generated) $(files) ast.c ast.h -o $(target) $(link)
 	

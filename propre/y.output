@@ -1,0 +1,589 @@
+Terminaux inutilisés dans la grammaire
+
+   END
+   OP_EGAL
+   OP_DIFF
+   OP_SUPEG
+   OP_INFEG
+   FOR
+   IF
+   ELSE
+   WHILE
+   DO
+   TRUE
+   FALSE
+   OR
+   TAND
+   NOT
+   '='
+   "<="
+   ">="
+   '<'
+   '>'
+   "=="
+   "!="
+   AND
+   UMOINS
+   '!'
+
+
+État 13 conflits: 1 décalage/réduction
+État 27 conflits: 1 décalage/réduction
+État 28 conflits: 1 décalage/réduction
+État 29 conflits: 1 décalage/réduction
+État 30 conflits: 1 décalage/réduction
+État 31 conflits: 5 décalage/réduction
+
+
+Grammaire
+
+    0 $accept: axiom $end
+
+    1 axiom: fonction
+    2      | instruction
+    3      | expr '\n'
+    4      | expr
+
+    5 fonction: TYPE ID '(' ')' '{' instruction '}'
+    6         | TYPE BLANCS ID '(' ')' '{' '}' '\n'
+
+    7 instruction: expr ';'
+    8            | declaration ';'
+
+    9 declaration: TYPE ID
+
+   10 expr: expr '+' expr
+   11     | expr '-' expr
+   12     | expr '/' expr
+   13     | expr '*' expr
+   14     | expr '%' expr
+   15     | '(' expr ')'
+   16     | '-' expr
+   17     | ID
+   18     | ENTIER
+
+
+Terminaux, suivis des règles où ils apparaissent
+
+$end (0) 0
+'\n' (10) 3 6
+'!' (33)
+'%' (37) 14
+'(' (40) 5 6 15
+')' (41) 5 6 15
+'*' (42) 13
+'+' (43) 10
+'-' (45) 11 16
+'/' (47) 12
+';' (59) 7 8
+'<' (60)
+'=' (61)
+'>' (62)
+'{' (123) 5 6
+'}' (125) 5 6
+error (256)
+END (258)
+OP_EGAL (259)
+OP_DIFF (260)
+OP_SUPEG (261)
+OP_INFEG (262)
+BLANCS (263) 6
+ID (264) 5 6 9 17
+ENTIER (265) 18
+TYPE (266) 5 6 9
+FOR (267)
+IF (268)
+ELSE (269)
+WHILE (270)
+DO (271)
+TRUE (272)
+FALSE (273)
+OR (274)
+TAND (275)
+NOT (276)
+"<=" (277)
+">=" (278)
+"==" (279)
+"!=" (280)
+AND (281)
+UMOINS (282)
+UMINUS (283)
+
+
+Non-terminaux, suivis des règles où ils apparaissent
+
+$accept (44)
+    à gauche: 0
+axiom (45)
+    à gauche: 1 2 3 4, à droite: 0
+fonction (46)
+    à gauche: 5 6, à droite: 1
+instruction (47)
+    à gauche: 7 8, à droite: 2 5
+declaration (48)
+    à gauche: 9, à droite: 8
+expr (49)
+    à gauche: 10 11 12 13 14 15 16 17 18, à droite: 3 4 7 10 11 12
+    13 14 15 16
+
+
+État 0
+
+    0 $accept: . axiom $end
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    TYPE    décalage et aller à l'état 3
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    axiom        aller à l'état 6
+    fonction     aller à l'état 7
+    instruction  aller à l'état 8
+    declaration  aller à l'état 9
+    expr         aller à l'état 10
+
+
+État 1
+
+   17 expr: ID .
+
+    $défaut  réduction par utilisation de la règle 17 (expr)
+
+
+État 2
+
+   18 expr: ENTIER .
+
+    $défaut  réduction par utilisation de la règle 18 (expr)
+
+
+État 3
+
+    5 fonction: TYPE . ID '(' ')' '{' instruction '}'
+    6         | TYPE . BLANCS ID '(' ')' '{' '}' '\n'
+    9 declaration: TYPE . ID
+
+    BLANCS  décalage et aller à l'état 11
+    ID      décalage et aller à l'état 12
+
+
+État 4
+
+   16 expr: '-' . expr
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 13
+
+
+État 5
+
+   15 expr: '(' . expr ')'
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 14
+
+
+État 6
+
+    0 $accept: axiom . $end
+
+    $end  décalage et aller à l'état 15
+
+
+État 7
+
+    1 axiom: fonction .
+
+    $défaut  réduction par utilisation de la règle 1 (axiom)
+
+
+État 8
+
+    2 axiom: instruction .
+
+    $défaut  réduction par utilisation de la règle 2 (axiom)
+
+
+État 9
+
+    8 instruction: declaration . ';'
+
+    ';'  décalage et aller à l'état 16
+
+
+État 10
+
+    3 axiom: expr . '\n'
+    4      | expr .
+    7 instruction: expr . ';'
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+
+    '+'   décalage et aller à l'état 17
+    '-'   décalage et aller à l'état 18
+    '*'   décalage et aller à l'état 19
+    '/'   décalage et aller à l'état 20
+    '\n'  décalage et aller à l'état 21
+    ';'   décalage et aller à l'état 22
+    '%'   décalage et aller à l'état 23
+
+    $défaut  réduction par utilisation de la règle 4 (axiom)
+
+
+État 11
+
+    6 fonction: TYPE BLANCS . ID '(' ')' '{' '}' '\n'
+
+    ID  décalage et aller à l'état 24
+
+
+État 12
+
+    5 fonction: TYPE ID . '(' ')' '{' instruction '}'
+    9 declaration: TYPE ID .
+
+    '('  décalage et aller à l'état 25
+
+    $défaut  réduction par utilisation de la règle 9 (declaration)
+
+
+État 13
+
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   16     | '-' expr .
+
+    '%'  décalage et aller à l'état 23
+
+    '%'       [réduction par utilisation de la règle 16 (expr)]
+    $défaut  réduction par utilisation de la règle 16 (expr)
+
+
+État 14
+
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   15     | '(' expr . ')'
+
+    '+'  décalage et aller à l'état 17
+    '-'  décalage et aller à l'état 18
+    '*'  décalage et aller à l'état 19
+    '/'  décalage et aller à l'état 20
+    ')'  décalage et aller à l'état 26
+    '%'  décalage et aller à l'état 23
+
+
+État 15
+
+    0 $accept: axiom $end .
+
+    $défaut  accepter
+
+
+État 16
+
+    8 instruction: declaration ';' .
+
+    $défaut  réduction par utilisation de la règle 8 (instruction)
+
+
+État 17
+
+   10 expr: expr '+' . expr
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 27
+
+
+État 18
+
+   11 expr: expr '-' . expr
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 28
+
+
+État 19
+
+   13 expr: expr '*' . expr
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 29
+
+
+État 20
+
+   12 expr: expr '/' . expr
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 30
+
+
+État 21
+
+    3 axiom: expr '\n' .
+
+    $défaut  réduction par utilisation de la règle 3 (axiom)
+
+
+État 22
+
+    7 instruction: expr ';' .
+
+    $défaut  réduction par utilisation de la règle 7 (instruction)
+
+
+État 23
+
+   14 expr: expr '%' . expr
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    expr  aller à l'état 31
+
+
+État 24
+
+    6 fonction: TYPE BLANCS ID . '(' ')' '{' '}' '\n'
+
+    '('  décalage et aller à l'état 32
+
+
+État 25
+
+    5 fonction: TYPE ID '(' . ')' '{' instruction '}'
+
+    ')'  décalage et aller à l'état 33
+
+
+État 26
+
+   15 expr: '(' expr ')' .
+
+    $défaut  réduction par utilisation de la règle 15 (expr)
+
+
+État 27
+
+   10 expr: expr . '+' expr
+   10     | expr '+' expr .
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+
+    '*'  décalage et aller à l'état 19
+    '/'  décalage et aller à l'état 20
+    '%'  décalage et aller à l'état 23
+
+    '%'       [réduction par utilisation de la règle 10 (expr)]
+    $défaut  réduction par utilisation de la règle 10 (expr)
+
+
+État 28
+
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   11     | expr '-' expr .
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+
+    '*'  décalage et aller à l'état 19
+    '/'  décalage et aller à l'état 20
+    '%'  décalage et aller à l'état 23
+
+    '%'       [réduction par utilisation de la règle 11 (expr)]
+    $défaut  réduction par utilisation de la règle 11 (expr)
+
+
+État 29
+
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   13     | expr '*' expr .
+   14     | expr . '%' expr
+
+    '%'  décalage et aller à l'état 23
+
+    '%'       [réduction par utilisation de la règle 13 (expr)]
+    $défaut  réduction par utilisation de la règle 13 (expr)
+
+
+État 30
+
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   12     | expr '/' expr .
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+
+    '%'  décalage et aller à l'état 23
+
+    '%'       [réduction par utilisation de la règle 12 (expr)]
+    $défaut  réduction par utilisation de la règle 12 (expr)
+
+
+État 31
+
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+   14     | expr '%' expr .
+
+    '+'  décalage et aller à l'état 17
+    '-'  décalage et aller à l'état 18
+    '*'  décalage et aller à l'état 19
+    '/'  décalage et aller à l'état 20
+    '%'  décalage et aller à l'état 23
+
+    '+'       [réduction par utilisation de la règle 14 (expr)]
+    '-'       [réduction par utilisation de la règle 14 (expr)]
+    '*'       [réduction par utilisation de la règle 14 (expr)]
+    '/'       [réduction par utilisation de la règle 14 (expr)]
+    '%'       [réduction par utilisation de la règle 14 (expr)]
+    $défaut  réduction par utilisation de la règle 14 (expr)
+
+
+État 32
+
+    6 fonction: TYPE BLANCS ID '(' . ')' '{' '}' '\n'
+
+    ')'  décalage et aller à l'état 34
+
+
+État 33
+
+    5 fonction: TYPE ID '(' ')' . '{' instruction '}'
+
+    '{'  décalage et aller à l'état 35
+
+
+État 34
+
+    6 fonction: TYPE BLANCS ID '(' ')' . '{' '}' '\n'
+
+    '{'  décalage et aller à l'état 36
+
+
+État 35
+
+    5 fonction: TYPE ID '(' ')' '{' . instruction '}'
+
+    ID      décalage et aller à l'état 1
+    ENTIER  décalage et aller à l'état 2
+    TYPE    décalage et aller à l'état 37
+    '-'     décalage et aller à l'état 4
+    '('     décalage et aller à l'état 5
+
+    instruction  aller à l'état 38
+    declaration  aller à l'état 9
+    expr         aller à l'état 39
+
+
+État 36
+
+    6 fonction: TYPE BLANCS ID '(' ')' '{' . '}' '\n'
+
+    '}'  décalage et aller à l'état 40
+
+
+État 37
+
+    9 declaration: TYPE . ID
+
+    ID  décalage et aller à l'état 41
+
+
+État 38
+
+    5 fonction: TYPE ID '(' ')' '{' instruction . '}'
+
+    '}'  décalage et aller à l'état 42
+
+
+État 39
+
+    7 instruction: expr . ';'
+   10 expr: expr . '+' expr
+   11     | expr . '-' expr
+   12     | expr . '/' expr
+   13     | expr . '*' expr
+   14     | expr . '%' expr
+
+    '+'  décalage et aller à l'état 17
+    '-'  décalage et aller à l'état 18
+    '*'  décalage et aller à l'état 19
+    '/'  décalage et aller à l'état 20
+    ';'  décalage et aller à l'état 22
+    '%'  décalage et aller à l'état 23
+
+
+État 40
+
+    6 fonction: TYPE BLANCS ID '(' ')' '{' '}' . '\n'
+
+    '\n'  décalage et aller à l'état 43
+
+
+État 41
+
+    9 declaration: TYPE ID .
+
+    $défaut  réduction par utilisation de la règle 9 (declaration)
+
+
+État 42
+
+    5 fonction: TYPE ID '(' ')' '{' instruction '}' .
+
+    $défaut  réduction par utilisation de la règle 5 (fonction)
+
+
+État 43
+
+    6 fonction: TYPE BLANCS ID '(' ')' '{' '}' '\n' .
+
+    $défaut  réduction par utilisation de la règle 6 (fonction)
