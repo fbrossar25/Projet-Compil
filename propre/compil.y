@@ -1,16 +1,18 @@
 %{
-  #include <stdio.h>
+   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
 
-  int yylex ();
-  void yyerror(char const *s);
+  #include "ast.h"
+  
 
 %}
 
 %union {
+
   char* string;
   int entier;
+  struct ast* ast ;
 }
 
 %token END
@@ -34,6 +36,8 @@
 %token NOT 
 
 
+%type <ast> expr 
+%type <ast> declaration
 
 
 
@@ -45,20 +49,33 @@
 %left AND
 %right NOT
 %left UMOINS '!'
+%left UMINUS
 
 %%
 
 axiom:
-        fonction
-        { 
-            printf("fonction reconnue !\n");
-	        exit(0);
-        }
-    |   instruction
-        { 
-            printf("instruction reconnue !\n");
-	        exit(0);
-        }
+	fonction
+	{ 
+		printf("fonction reconnue !\n");
+		exit(0);
+	}
+	| instruction
+	{ 
+		printf("instruction reconnue !\n");
+		exit(0);
+	}
+	|expr '\n' 
+	{ 
+			printf("Chaine reconnue !\n");
+			ast_print($1, 0);
+			exit(0);
+	}
+	| expr    
+	{ 
+			printf("Chaine reconnue !\n");
+			ast_print($1, 0);
+			exit(0);
+	}
     ;
 
 fonction:
@@ -74,32 +91,29 @@ fonction:
 
 instruction:
         expr ';'
-    |   declaration ';'
+    |   declaration ';' 	
     ;
 
 declaration:
-        TYPE BLANCS ID
+        TYPE ID 			  { $$ = ast_new_operation("TYPE", NULL ,ast_new_id($2));}
     ;
 
 expr:
-        expr '+' expr
-        {
-            printf("OPERATEUR(+)\n");
-        }
-    |   ENTIER
-        {
-            printf("ENTIER(%d)\n",$1);
-        }
-    |   ID
-        {
-            printf("ID(%s)\n",$1);
-        }
-    ;
+	expr '+' expr             { $$ = ast_new_operation("+", $1, $3); }
+	| expr '-' expr           { $$ = ast_new_operation("-", $1, $3); }
+	| expr '/' expr           { $$ = ast_new_operation("/", $1, $3); }
+	| expr '*' expr           { $$ = ast_new_operation("*", $1, $3); }
+	| expr '%' expr           { $$ = ast_new_operation("%", $1, $3); }
+	| '(' expr ')'            { $$ = $2; }
+	| '-' expr %prec UMINUS   { $$ = ast_new_operation("-", $2, NULL); }
+	| ID                      { $$ = ast_new_id($1); }
+	| ENTIER                  { $$ = ast_new_number($1); }
+	;
 	
 %%
 
+
 int main() {
   printf("Entrez une expression :\n");
-  yyparse();
-  return 0;
+  return yyparse();
 }

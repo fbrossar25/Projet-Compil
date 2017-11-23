@@ -9,7 +9,7 @@ generated=y.tab.c lex.yy.c y.tab.h
 all: mrproper
 	yacc -d $(prefixe).y
 	lex $(prefixe).l
-	gcc $(arg) $(generated) $(files) -o $(target) $(link)
+	gcc $(arg) $(generated) $(files) ast.c ast.h -o $(target) $(link)
 	
 clean:
 	rm -f *.o $(generated)
