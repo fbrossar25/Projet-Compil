@@ -22,11 +22,28 @@
 %token <string> ID
 %token <entier> ENTIER
 %token TYPE
+%token FOR
+%token IF
+%token ELSE
+%token WHILE
+%token DO
+%token TRUE
+%token FALSE 
+%token OR
+%token TAND 
+%token NOT 
+
+
+
+
 
 %right '='
 %left '+' '-'
 %left '*' '/'
 %left "<=" ">=" '<' '>' "==" "!="
+%left OR
+%left AND
+%right NOT
 %left UMOINS '!'
 
 %%
