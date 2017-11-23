@@ -54,7 +54,18 @@ extern int yydebug;
     ID = 264,
     ENTIER = 265,
     TYPE = 266,
-    UMOINS = 271
+    FOR = 267,
+    IF = 268,
+    ELSE = 269,
+    WHILE = 270,
+    DO = 271,
+    TRUE = 272,
+    FALSE = 273,
+    OR = 274,
+    TAND = 275,
+    NOT = 276,
+    AND = 281,
+    UMOINS = 282
   };
 #endif
 /* Tokens.  */
@@ -67,7 +78,18 @@ extern int yydebug;
 #define ID 264
 #define ENTIER 265
 #define TYPE 266
-#define UMOINS 271
+#define FOR 267
+#define IF 268
+#define ELSE 269
+#define WHILE 270
+#define DO 271
+#define TRUE 272
+#define FALSE 273
+#define OR 274
+#define TAND 275
+#define NOT 276
+#define AND 281
+#define UMOINS 282
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -79,7 +101,7 @@ union YYSTYPE
   char* string;
   int entier;
 
-#line 83 "y.tab.h" /* yacc.c:1909  */
+#line 105 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
