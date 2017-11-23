@@ -23,27 +23,27 @@ BLANCS [[:blank:]]+
 
 <<EOF>>         { return END; }
 {TYPE}          { return TYPE; }
-{OPERATEUR}     { return yytext[0]; }
-{ID}        	{ yylval.string = strdup(yytext);   return ID; }
-{ENTIER}     	{ yylval.entier = atoi(yytext);     return ENTIER; }
-{COMMENTAIRE}   { }
 "=="            { return OP_EGAL; }
 "!="            { return OP_DIFF; }
 ">="            { return OP_SUPEG; }
 "<="            { return OP_INFEG; }
-"&&" 			{return AND;}
-"||" 			{return OR;}
-"!"				{return NOT;}
-"true" 			{return TRUE;}
-"false" 		{return FALSE;}
-"for"			{return FOR ;}
-"if"			{return IF;}
-"else" 			{return ELSE;}
-"do" 			{return DO;}
-"while" 		{return WHILE;}
+"&&" 			      { return AND; }
+"||" 			      { return OR; }
+"!"				      { return NOT; }
+"true" 		      { return TRUE; }
+"false"         { return FALSE; }
+"for"		        { return FOR ;}
+"if"			      { return IF;}
+"else" 			    {return ELSE;}
+"do" 			      { return DO;}
+"while" 		    { return WHILE;}
+{OPERATEUR}     { return yytext[0]; }
+{ID}        	  { yylval.string = strdup(yytext);   return ID; }
+{ENTIER}     	  { yylval.entier = atoi(yytext);     return ENTIER; }
+{COMMENTAIRE}   { }
 
 {BLANCS}        { return BLANCS; }
-[(){};]      	{ return yytext[0]; } 
+[(){};]      	  { return yytext[0]; } 
 .               { printf("non reconnus: %s\n", yytext); }
 
 
