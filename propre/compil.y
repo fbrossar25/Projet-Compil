@@ -32,7 +32,7 @@
 %token TRUE
 %token FALSE 
 %token OR
-%token TAND 
+%token AND 
 %token NOT 
 
 
@@ -41,15 +41,12 @@
 
 
 
-%right '='
-%left '+' '-'
-%left '*' '/'
-%left "<=" ">=" '<' '>' "==" "!="
+
 %left OR
 %left AND
-%right NOT
-%left UMOINS '!'
-%left UMINUS
+%left '+' '-'
+%left '*' '/'
+%precedence UMINUS
 
 %%
 
@@ -104,6 +101,9 @@ expr:
 	| expr '/' expr           { $$ = ast_new_operation("/", $1, $3); }
 	| expr '*' expr           { $$ = ast_new_operation("*", $1, $3); }
 	| expr '%' expr           { $$ = ast_new_operation("%", $1, $3); }
+	| expr OR expr            { $$ = ast_new_operation("||", $1, $3); }
+	| expr AND expr           { $$ = ast_new_operation("&&", $1, $3); }
+	| '!' expr          	  { $$ = ast_new_operation("!", $2, NULL); }
 	| '(' expr ')'            { $$ = $2; }
 	| '-' expr %prec UMINUS   { $$ = ast_new_operation("-", $2, NULL); }
 	| ID                      { $$ = ast_new_id($1); }

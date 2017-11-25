@@ -13,7 +13,6 @@
 ID 		[a-zA-Z_][a-zA-Z0-9_]*
 ENTIER 	[0-9]+
 COMMENTAIRE "/*"([^*]*[*]+[*]*[^*/])*[^*]*[*]+"/"
-OPERATEUR "-"|"+"|"*"|"/"|"<"|">"
 TYPE 	"int"
 BLANCS [[:blank:]]+
 
@@ -37,10 +36,9 @@ BLANCS [[:blank:]]+
 "else" 			    {return ELSE;}
 "do" 			      { return DO;}
 "while" 		    { return WHILE;}
-{OPERATEUR}     { return yytext[0]; }
 {ID}        	  { yylval.string = strdup(yytext);   return ID; }
 {ENTIER}     	  { yylval.entier = atoi(yytext);     return ENTIER; }
-{COMMENTAIRE}   { }
+{COMMENTAIRE}      { }
 
 {BLANCS}        { return BLANCS; }
 [(){};]      	  { return yytext[0]; } 
