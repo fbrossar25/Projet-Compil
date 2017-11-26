@@ -89,5 +89,48 @@ void ast_print(ast* src, int indent)
 
 void ast_destroy(ast* src)
 {
-  // à faire
+	if(src !=NULL)
+	{
+		if(src->type == NULL)
+		{
+			free(src);
+		}
+		else if(strcmp(src->type, "INT") == 0)
+		{
+			free(src->type);
+			free(src);
+		}
+		else if(strcmp(src->type, "ID") == 0)
+		{
+			free(src->type);
+			free(src->u.affect.id);
+			ast_destroy(src->u.affect.expr );
+		}
+		else if(strcmp(src->type, "FCT") == 0)
+		{
+			free(src->type);
+			free(src->u.fct.id);
+			ast_destroy( src->u.fct.block);
+		}
+		else
+		{
+			if(src->u.op.left != NULL)
+			{
+				free(src->type);
+				ast_destroy(src->u.op.left);	
+				ast_destroy(src->u.op.right);	
+			}
+			else
+			{
+				free(src->type);
+				ast_destroy(src->u.op.right);
+			}
+		}
+		
+		if(src->nextInstr != NULL)
+		{
+			ast_destroy(src->nextInstr);
+		}
+		
+	}
 }
