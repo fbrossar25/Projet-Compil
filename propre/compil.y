@@ -42,6 +42,7 @@
 %type <ast> fonction
 %type <ast> bloc
 %type <ast> declaration
+%type <ast> assignation
 
 //les précédences inutiles (fonctionne de la même manière avec ou sans) sont commentées
 //%right '='
@@ -69,7 +70,7 @@ fonction:
 		TYPE ID arguments bloc
 		{
 			$$ = ast_new_fonction($2);
-			$$.u.op.left = $4;
+			$$->u.op.left = $4;
 		}
 	;
 
@@ -136,7 +137,7 @@ assignation:
 		ID '=' expr
 		{
 			$$ = ast_new_id($1);
-			$$.u.op.left = $3;
+			$$->u.op.left = $3;
 		}
 	;
 
@@ -159,7 +160,7 @@ expr:
 		}
 	|	'(' expr ')'
 		{
-			$$ = $2
+			$$ = $2;
 		}
 	|	ENTIER
 		{
