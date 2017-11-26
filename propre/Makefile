@@ -40,7 +40,7 @@ clean:
 	rm -rf *.o $(GENERATED)
 
 test: all $(EXEC)
-	cat resources/$(INPUT) | ./$(EXEC)
+	cat $(INPUT) | ./$(EXEC)
 
 valgrind: all $(EXEC)
 	valgrind ./$(EXEC)
