@@ -1,19 +1,31 @@
+#nom de l'éxécutable cible
 EXEC = compil
-FILES = ast symbol
-SRC = $(addsuffix .c, $(addprefix src/, $(FILES)))
-OBJ = $(addsuffix .o, $(addprefix obj/, $(FILES)))
-INPUT = input.txt
-LDFLAGS = -ly -ll -lfl
-CFLAGS = -g -std=gnu99 -Wall
-GENERATED = lex.yy.c y.tab.c
+
+#compilateur, analyseurs
 CC = gcc
 YACC = yacc -d -Wall -v
 FLEX = flex -d
 
+#flages de compilation
+LDFLAGS = -ly -ll -lfl
+CFLAGS = -Wall -std=gnu99 -g
+
+#fichier générés par flex et yacc (sauf y.output)
+GENERATED = lex.yy.c y.tab.c
+
+#fichier d'entrée pour make test
+INPUT = input.txt
+
+#fichiers sources
+SRC = ast symbol
+OBJ := $(addsuffix .o, $(SRC))
+SRC := $(addsuffix .c, $(SRC))
+
+#compilation du projet
 all: $(EXEC)
 
 $(EXEC): $(OBJ) $(GENERATED)
-	$(CC) $(SRC) -o $@ $(OBJ) $(GENERATED) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 lex.yy.c: $(EXEC).l
 	$(FLEX) $(EXEC).l
@@ -21,11 +33,11 @@ lex.yy.c: $(EXEC).l
 y.tab.c: $(EXEC).y
 	$(YACC) $(EXEC).y
 
-obj/%.o: src/%.c
+%.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm -rf obj/ $(GENERATED)
+	rm -rf *.o $(GENERATED)
 
 test: all $(EXEC)
 	cat resources/$(INPUT) | ./$(EXEC)
@@ -42,6 +54,3 @@ mrproper: clean
 	rm -f $(EXEC) y.output
 
 remake: mrproper all
-
-dir :
-	@if [ ! -d obj/ ]; then mkdir obj/; fi

@@ -3,7 +3,7 @@
    #include <stdio.h>
    #include <stdlib.h>
 
-   //#include "symbol.h"
+   #include "symbol.h"
    #include "ast.h"
 
    //pour éviter un warning avec yylex
