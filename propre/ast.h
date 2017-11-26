@@ -14,15 +14,23 @@ typedef struct ast {
             struct ast* left;
             struct ast* right;
         } op;
+        struct {
+            struct ast* block;
+            char * id;
+        } fct;
+        struct {
+            struct ast* expr;
+            char* id;
+        } affect;
         int number;
-        char* id;
     } u;
+    struct ast* nextInstr;
 } ast;
 
 ast* ast_alloc();
 ast* ast_new_operation(char* op, ast* left, ast* right);
-ast* ast_new_fonction(char* fct);
-ast* ast_new_id(char* id);
+ast* ast_new_fonction(char* fct, ast* bloc);
+ast* ast_new_id(char* id, ast* expr);
 ast* ast_new_entier(int entier);
 void ast_print(ast* src, int indent);
 

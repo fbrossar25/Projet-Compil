@@ -52,16 +52,18 @@
 //%left OR AND
 //%right NOT
 //%left '!'
-//%precedence UMINUS
+%precedence UMOINS
 
 %%
 
 axiom:
 		fonction
 		{
-			parsing_ok();
-			ast_print($1,0);
-			ast_destroy($1);
+			parsing_ok($1);
+		}
+	|	instruction
+		{
+			parsing_ok($1);
 		}
 	;
 
@@ -69,13 +71,15 @@ axiom:
 fonction:
 		TYPE ID arguments bloc
 		{
-			$$ = ast_new_fonction($2);
-			$$->u.op.left = $4;
+			$$ = ast_new_fonction($2, $4);
 		}
 	;
 
 arguments:
 		'(' ')'
+		{
+
+		}
 	;
 
 bloc:
@@ -96,7 +100,8 @@ instructions:
 		}
 	|	instruction instructions
 		{
-			// à faire (nouveau type de noeud instructions ? left -> op, right -> ast_new_instructions ?)
+			$$ = $1;
+			$$->nextInstr = $2;
 		}
 	;
 
@@ -125,7 +130,7 @@ appel:
 declaration:
 		TYPE ID
 		{
-			$$ = ast_new_id($2);
+			$$ = ast_new_id($2, NULL);
 		}
 	|	TYPE assignation
 		{
@@ -136,8 +141,7 @@ declaration:
 assignation:
 		ID '=' expr
 		{
-			$$ = ast_new_id($1);
-			$$->u.op.left = $3;
+			$$ = ast_new_id($1, $3);
 		}
 	;
 
@@ -162,22 +166,34 @@ expr:
 		{
 			$$ = $2;
 		}
+	|	'-' expr %prec UMOINS
+		{
+			$$ = ast_new_operation("-",NULL,$2);
+		}
 	|	ENTIER
 		{
 			$$ = ast_new_entier($1);
 		}
 	|	ID
 		{
-			$$ = ast_new_id($1);
+			$$ = ast_new_id($1, NULL);
 		}
 	;
 	
 %%
 
-void parsing_ok()
+void parsing_ok(ast* src)
 {
 	printf("Parsing OK !\n");
 	printf("%d lignes reconnues !\n", yylineno);
+	printf("========== AST ==========\n");
+	if(src == NULL)
+	{
+		printf("Aucun AST n'as été produit\n");
+	}
+	ast_print(src,0);
+	ast_destroy(src); // à corriger
+	printf("=========================\n");
 	exit(EXIT_SUCCESS);
 }
 
@@ -189,6 +205,5 @@ void yyerror(char *s)
 int main()
 {
   printf("Entrez une expression :\n");
-  yyparse();
-  return EXIT_SUCCESS;
+  return yyparse();
 }

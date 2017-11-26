@@ -3,8 +3,8 @@
 ast* ast_alloc()
 {
   ast* new = malloc(sizeof(ast));
-  new->u.op.left = NULL;
-  new->u.op.right = NULL;
+  new->type = NULL;
+  new->nextInstr = NULL;
   return new;
 }
 
@@ -17,19 +17,21 @@ ast* ast_new_operation(char* op, ast* left, ast* right)
   return new;
 }
 
-ast* ast_new_fonction(char* fct)
+ast* ast_new_fonction(char* fct, ast* bloc)
 {
   ast* new = ast_alloc();
   new->type = strdup("FCT");
-  new->u.id = strdup(fct);
+  new->u.fct.id = strdup(fct);
+  new->u.fct.block = bloc;
   return new;
 }
 
-ast* ast_new_id(char* id)
+ast* ast_new_id(char* id, ast* expr)
 {
   ast* new = ast_alloc();
   new->type = strdup("ID");
-  new->u.id = strdup(id);
+  new->u.affect.id = strdup(id);
+  new->u.affect.expr = expr;
   return new;
 }
 
@@ -56,57 +58,36 @@ void ast_print(ast* src, int indent)
 
   if(src->type == NULL)
   {
-    //erreur
+    printf("Erreur: type non renseigné\n");
   }
-  else if(strcmp(src->type, "INT"))
+  else if(strcmp(src->type, "INT") == 0)
   {
-    //affichage entier
+    printf("INT(%d)\n",src->u.number);
   }
-  else if(strcmp(src->type, "ID"))
+  else if(strcmp(src->type, "ID") == 0)
   {
-    //affichage id
+    printf("ID(%s)\n",src->u.affect.id);
+    ast_print(src->u.affect.expr, indent + 1);
   }
-  else if(strcmp(src->type, "FCT"))
+  else if(strcmp(src->type, "FCT") == 0)
   {
-    //affichage fonction
+    printf("FCT(%s)\n", src->u.fct.id);
+    ast_print(src->u.fct.block, indent + 1);
   }
   else
   {
-    //affichage operation
+    printf("OP(%s)\n", src->type);
+    ast_print(src->u.op.left, indent + 1);
+    ast_print(src->u.op.right, indent + 1);
+  }
+  
+  if(src->nextInstr != NULL)
+  {
+    ast_print(src->nextInstr, indent + 1);
   }
 }
 
 void ast_destroy(ast* src)
 {
-  if(src == NULL)
-  {
-    return;
-  }
-
-  if(src->u.op.left != NULL)
-  {
-    ast_destroy(src->u.op.left);
-  }
-  if(src->u.op.right!= NULL)
-  {
-    ast_destroy(src->u.op.right);
-  }
-  
-  ast_free_node(src);
-  free(src);
-}
-
-void ast_free_node(ast* node)
-{
-  if(node->type != NULL)
-  {
-    free(node->type);
-    node->type = NULL;
-  }
-
-  if(node->u.id != NULL)
-  {
-    free(node->u.id);
-    //free(node->u); // à vérifier
-  }
+  // à faire
 }

@@ -45,7 +45,7 @@ TYPE 	"int"
 [\n]            { /*return yytext[0];*/ }
 [\t \r]+          { /*return BLANCS;*/ }
 [(){};]      	  { return yytext[0]; } 
-.               { printf("token non reconnu: '%s'\n", yytext); }
+.               { printf("token non reconnus: '%s'\n", yytext); }
 
 
 
