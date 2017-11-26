@@ -14,6 +14,7 @@
 ID 		[a-zA-Z_][a-zA-Z0-9_]*
 ENTIER 	[0-9]+
 COMMENTAIRE "/*"([^*]*[*]+[*]*[^*/])*[^*]*[*]+"/"
+OPERATEUR "+"|"-"|"*"|"/"|"<"|">"
 TYPE 	"int"
 
 
@@ -30,6 +31,7 @@ TYPE 	"int"
 "&&" 			      { return AND; }
 "||" 			      { return OR; }
 "!"				      { return NOT; }
+{OPERATEUR}     { return yytext[0]; }
 "true" 		      { return TRUE; }
 "false"         { return FALSE; }
 "for"		        { return FOR ;}
@@ -41,9 +43,9 @@ TYPE 	"int"
 {ENTIER}     	  { yylval.entier = atoi(yytext);     return ENTIER; }
 {COMMENTAIRE}   { }
 [\n]            { /*return yytext[0];*/ }
-[\t ]+          { /*return BLANCS;*/ }
+[\t \r]+          { /*return BLANCS;*/ }
 [(){};]      	  { return yytext[0]; } 
-.               { printf("token non reconnu: %s\n", yytext); }
+.               { printf("token non reconnu: '%s'\n", yytext); }
 
 
 
