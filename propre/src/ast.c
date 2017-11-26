@@ -89,5 +89,42 @@ void ast_print(ast* src, int indent)
 
 void ast_destroy(ast* src)
 {
-  // à faire
+  if(src == NULL)
+  {
+    return;
+  }
+
+  if(src->type == NULL)
+  {
+    fprintf(stderr, "erreur @ast_destroy: un type n'a pas été renseigné !\n");
+  }
+  else if(strcmp(src->type, "INT") == 0)
+  {
+    free(src->type);
+  }
+  else if(strcmp(src->type, "ID") == 0)
+  {
+    free(src->type);
+    free(src->u.affect.id);
+    ast_destroy(src->u.affect.expr);
+  }
+  else if(strcmp(src->type, "FCT") == 0)
+  {
+    free(src->type);
+    free(src->u.fct.id);
+    ast_destroy(src->u.fct.block);
+  }
+  else //OP
+  {
+    free(src->type);
+    ast_destroy(src->u.op.left);
+    ast_destroy(src->u.op.right);
+  }
+
+  if(src->nextInstr != NULL)
+  {
+    ast_destroy(src->nextInstr);
+  }
+
+  free(src);
 }
