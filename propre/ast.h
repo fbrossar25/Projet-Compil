@@ -36,5 +36,6 @@ void ast_print(ast* src, int indent);
 
 void ast_free_node(ast* node);
 void ast_destroy(ast* root);
+int  ast_eval(ast* src);
 
 #endif

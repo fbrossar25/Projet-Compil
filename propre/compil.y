@@ -192,6 +192,8 @@ void parsing_ok(ast* src)
 		printf("Aucun AST n'as été produit\n");
 	}
 	ast_print(src,0);
+	int val = ast_eval(src);
+	printf("valeur de l'expression : %d !\n", val);
 	ast_destroy(src); // à corriger
 	printf("=========================\n");
 	exit(EXIT_SUCCESS);
