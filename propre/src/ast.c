@@ -87,44 +87,108 @@ void ast_print(ast* src, int indent)
   }
 }
 
+int  ast_eval(ast* src)
+{
+	int val = 0;
+	if(src !=NULL)
+	{
+		
+		if(src->type == NULL)
+		{
+			free(src);
+		}
+		else if(strcmp(src->type, "INT") == 0)
+		{
+			val = src->u.number;
+		}
+		else if(strcmp(src->type, "ID") == 0)
+		{
+	
+			val = ast_eval(src->u.affect.expr );
+		}
+		else if(strcmp(src->type, "FCT") == 0)
+		{
+			val = ast_eval(src->u.fct.block);
+		}
+		else if(strcmp(src->type, "+") == 0)
+		{
+			val = ast_eval(src->u.op.left) + ast_eval(src->u.op.right) ; 
+		}
+		else if(strcmp(src->type, "/") == 0)
+		{
+			val = ast_eval(src->u.op.left) / ast_eval(src->u.op.right) ; 
+		}
+		else if(strcmp(src->type, "*") == 0)
+		{
+			val = ast_eval(src->u.op.left) * ast_eval(src->u.op.right) ; 
+		}
+		else if(strcmp(src->type, "-") == 0)
+		{
+			if(src->u.op.left != NULL)
+			{
+				val = ast_eval(src->u.op.left) - ast_eval(src->u.op.right) ; 
+			}
+			else
+			{
+				val = - (ast_eval(src->u.op.left)) ; 
+			}
+		}
+			
+	}
+		
+	if(src->nextInstr != NULL)
+	{
+		val = ast_eval(src->nextInstr);
+	}
+	return val ;
+}
+
+
 void ast_destroy(ast* src)
 {
-  if(src == NULL)
-  {
-    return;
-  }
-
-  if(src->type == NULL)
-  {
-    fprintf(stderr, "erreur @ast_destroy: un type n'a pas été renseigné !\n");
-  }
-  else if(strcmp(src->type, "INT") == 0)
-  {
-    free(src->type);
-  }
-  else if(strcmp(src->type, "ID") == 0)
-  {
-    free(src->type);
-    free(src->u.affect.id);
-    ast_destroy(src->u.affect.expr);
-  }
-  else if(strcmp(src->type, "FCT") == 0)
-  {
-    free(src->type);
-    free(src->u.fct.id);
-    ast_destroy(src->u.fct.block);
-  }
-  else //OP
-  {
-    free(src->type);
-    ast_destroy(src->u.op.left);
-    ast_destroy(src->u.op.right);
-  }
-
-  if(src->nextInstr != NULL)
-  {
-    ast_destroy(src->nextInstr);
-  }
-
-  free(src);
+	if(src !=NULL)
+	{
+		if(src->type == NULL)
+		{
+			free(src);
+		}
+		else if(strcmp(src->type, "INT") == 0)
+		{
+			free(src->type);
+			free(src);
+		}
+		else if(strcmp(src->type, "ID") == 0)
+		{
+			free(src->type);
+			free(src->u.affect.id);
+			ast_destroy(src->u.affect.expr );
+		}
+		else if(strcmp(src->type, "FCT") == 0)
+		{
+			free(src->type);
+			free(src->u.fct.id);
+			ast_destroy( src->u.fct.block);
+		}
+		else
+		{
+			if(src->u.op.left != NULL)
+			{
+				free(src->type);
+				ast_destroy(src->u.op.left);	
+				ast_destroy(src->u.op.right);	
+			}
+			else
+			{
+				free(src->type);
+				ast_destroy(src->u.op.right);
+			}
+		}
+		
+		if(src->nextInstr != NULL)
+		{
+			ast_destroy(src->nextInstr);
+		}
+		
+	}
 }
+
