@@ -83,7 +83,7 @@ void ast_print(ast* src, int indent)
   
   if(src->nextInstr != NULL)
   {
-    ast_print(src->nextInstr, indent + 1);
+    ast_print(src->nextInstr, indent);
   }
 }
 
