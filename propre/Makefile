@@ -2,14 +2,15 @@ prefixe=compil
 files=
 target=compil
 input=input.txt
-link=-ly -ll
-arg=-g -std=c99
+link=-ly -ll -lfl
+arg=-g -std=gnu99
 generated=y.tab.c lex.yy.c y.tab.h
 YACC=yacc -d -Wall -v
+FLEX= flex -d
 
 all: mrproper
+	$(FLEX) $(prefixe).l
 	$(YACC) $(prefixe).y
-	lex $(prefixe).l
 	gcc $(arg) $(generated) $(files) ast.c ast.h -o $(target) $(link)
 	
 clean:
@@ -17,6 +18,12 @@ clean:
 
 test: all $(prefixe)
 	cat $(input) | ./$(target)
+
+valgrind: all $(prefixe)
+	valgrind ./$(target)
+
+valgrind-test: all $(prefixe)
+	cat $(input) | valgrind ./$(target)
 
 mrproper: clean
 	rm -f $(target)

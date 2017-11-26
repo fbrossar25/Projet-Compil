@@ -1,3 +1,4 @@
+%option yylineno
 %{
   #include <stdio.h>
   #include <stdlib.h>
@@ -14,7 +15,6 @@ ID 		[a-zA-Z_][a-zA-Z0-9_]*
 ENTIER 	[0-9]+
 COMMENTAIRE "/*"([^*]*[*]+[*]*[^*/])*[^*]*[*]+"/"
 TYPE 	"int"
-BLANCS [[:blank:]]+
 
 
 
@@ -22,6 +22,7 @@ BLANCS [[:blank:]]+
 
 <<EOF>>         { return END; }
 {TYPE}          { return TYPE; }
+"="             { return yytext[0]; }
 "=="            { return OP_EGAL; }
 "!="            { return OP_DIFF; }
 ">="            { return OP_SUPEG; }
@@ -38,11 +39,11 @@ BLANCS [[:blank:]]+
 "while" 		    { return WHILE;}
 {ID}        	  { yylval.string = strdup(yytext);   return ID; }
 {ENTIER}     	  { yylval.entier = atoi(yytext);     return ENTIER; }
-{COMMENTAIRE}      { }
-
-{BLANCS}        { return BLANCS; }
+{COMMENTAIRE}   { }
+[\n]            { /*return yytext[0];*/ }
+[\t ]+          { /*return BLANCS;*/ }
 [(){};]      	  { return yytext[0]; } 
-.               { printf("non reconnus: %s\n", yytext); }
+.               { printf("token non reconnu: %s\n", yytext); }
 
 
 

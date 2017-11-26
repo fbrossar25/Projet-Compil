@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+//type : INT | FCT | ID | operateur (+,-,=, etc...)
 
 typedef struct ast {
     char* type;
@@ -12,22 +13,20 @@ typedef struct ast {
         struct {
             struct ast* left;
             struct ast* right;
-        } operation;
-        struct {
-            struct ast** leafs;
-        } leafs;
+        } op;
         int number;
         char* id;
     } u;
 } ast;
 
-ast* ast_new_operation(char*, ast*, ast*);
-// ast* ast_new_declaration(char* op, ast* right);
-ast* ast_new_number(int);
-ast* ast_new_id(char*);
-void ast_print(ast*, int);
+ast* ast_alloc();
+ast* ast_new_operation(char* op, ast* left, ast* right);
+ast* ast_new_fonction(char* fct);
+ast* ast_new_id(char* id);
+ast* ast_new_entier(int entier);
+void ast_print(ast* src, int indent);
 
-int yylex();
-void yyerror(char*);
+void ast_free_node(ast* node);
+void ast_destroy(ast* root);
 
 #endif
