@@ -87,6 +87,115 @@ void ast_print(ast* src, int indent)
   }
 }
 
+struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
+{
+	struct symbol* s;
+	struct symbol* tmp = newtemp(t);
+	if(src !=NULL)
+	{
+		
+		if(src->type == NULL)
+		{
+			free(src);
+		}
+		else if(strcmp(src->type, "INT") == 0)
+		{
+			s=symtable_const(t,src->u.number);		
+			
+		}
+		else if(strcmp(src->type, "ID") == 0)
+		{
+			s=symtable_put(t,src->u.affect.id );
+			
+			gencode(c,EQUAL,s,astGencode(src->u.affect.expr,t,c),tmp);
+		}
+		else if(strcmp(src->type, "FCT") == 0)
+		{
+			s=symtable_put(t,src->u.affect.id );
+			astGencode(src->u.fct.block ,t,c);
+		}
+		else if(strcmp(src->type, "+") == 0)
+		{
+			gencode(c,BOP_PLUS,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+		}
+		else if(strcmp(src->type, "/") == 0)
+		{
+			gencode(c,BOP_DIV,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+		}
+		else if(strcmp(src->type, "*") == 0)
+		{
+			gencode(c,BOP_MULT,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+		}
+		else if(strcmp(src->type, "-") == 0)
+		{
+			if(src->u.op.left != NULL)
+			{
+				 gencode(c,BOP_MINUS,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+			}
+			else
+			{
+				gencode(c,UOP_MINUS,NULL,astGencode(src->u.op.right,t,c),tmp);
+			}
+		}
+			
+	}
+		
+	if(src->nextInstr != NULL)
+	{
+		s=astGencode(src->nextInstr,t,c);
+	}
+	return s ;
+}
+
+
+void ast_destroy(ast* src)
+{
+	if(src !=NULL)
+	{
+		if(src->type == NULL)
+		{
+			free(src);
+		}
+		else if(strcmp(src->type, "INT") == 0)
+		{
+			free(src->type);
+			free(src);
+		}
+		else if(strcmp(src->type, "ID") == 0)
+		{
+			free(src->type);
+			free(src->u.affect.id);
+			ast_destroy(src->u.affect.expr );
+		}
+		else if(strcmp(src->type, "FCT") == 0)
+		{
+			free(src->type);
+			free(src->u.fct.id);
+			ast_destroy( src->u.fct.block);
+		}
+		else
+		{
+			if(src->u.op.left != NULL)
+			{
+				free(src->type);
+				ast_destroy(src->u.op.left);	
+				ast_destroy(src->u.op.right);	
+			}
+			else
+			{
+				free(src->type);
+				ast_destroy(src->u.op.right);
+			}
+		}
+		
+		if(src->nextInstr != NULL)
+		{
+			ast_destroy(src->nextInstr);
+		}
+		
+	}
+}
+
 int  ast_eval(ast* src)
 {
 	int val = 0;
@@ -141,54 +250,5 @@ int  ast_eval(ast* src)
 		val = ast_eval(src->nextInstr);
 	}
 	return val ;
-}
-
-
-void ast_destroy(ast* src)
-{
-	if(src !=NULL)
-	{
-		if(src->type == NULL)
-		{
-			free(src);
-		}
-		else if(strcmp(src->type, "INT") == 0)
-		{
-			free(src->type);
-			free(src);
-		}
-		else if(strcmp(src->type, "ID") == 0)
-		{
-			free(src->type);
-			free(src->u.affect.id);
-			ast_destroy(src->u.affect.expr );
-		}
-		else if(strcmp(src->type, "FCT") == 0)
-		{
-			free(src->type);
-			free(src->u.fct.id);
-			ast_destroy( src->u.fct.block);
-		}
-		else
-		{
-			if(src->u.op.left != NULL)
-			{
-				free(src->type);
-				ast_destroy(src->u.op.left);	
-				ast_destroy(src->u.op.right);	
-			}
-			else
-			{
-				free(src->type);
-				ast_destroy(src->u.op.right);
-			}
-		}
-		
-		if(src->nextInstr != NULL)
-		{
-			ast_destroy(src->nextInstr);
-		}
-		
-	}
 }
 

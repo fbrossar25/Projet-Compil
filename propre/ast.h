@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lib.h"
 
 //type : INT | FCT | ID | operateur (+,-,=, etc...)
 
@@ -33,7 +34,7 @@ ast* ast_new_fonction(char* fct, ast* bloc);
 ast* ast_new_id(char* id, ast* expr);
 ast* ast_new_entier(int entier);
 void ast_print(ast* src, int indent);
-
+struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c);
 void ast_free_node(ast* node);
 void ast_destroy(ast* root);
 int  ast_eval(ast* src);

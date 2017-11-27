@@ -3,7 +3,6 @@
    #include <stdio.h>
    #include <stdlib.h>
 
-   #include "symbol.h"
    #include "ast.h"
 
    //pour éviter un warning avec yylex
@@ -197,9 +196,13 @@ void parsing_ok(ast* src)
 		printf("Aucun AST n'as été produit\n");
 	}
 	ast_print(src,0);
-	int val = ast_eval(src);
-	printf("valeur de l'expression : %d !\n", val);
-	ast_destroy(src); // à corriger
+	//int val = ast_eval(src);
+	//printf("valeur de l'expression : %d !\n", val);
+	struct symtable* t = symtable_new();
+	struct code * c = code_new();
+	astGencode(src,t,c);
+	code_dump(c);
+	//ast_destroy(src); // à corriger
 	printf("=========================\n");
 	exit(EXIT_SUCCESS);
 }

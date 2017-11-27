@@ -17,7 +17,7 @@ GENERATED = lex.yy.c y.tab.c
 INPUT = input.txt
 
 #fichiers sources
-SRC = ast symbol
+SRC = ast symbol lib
 OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 

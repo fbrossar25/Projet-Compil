@@ -16,8 +16,8 @@ ENTIER 	[0-9]+
 COMMENTAIRE "/*"([^*]*[*]+[*]*[^*/])*[^*]*[*]+"/"
 OPERATEUR "+"|"-"|"*"|"/"|"<"|">"
 TYPE 	"int"
-
-
+%option nounput
+%option noinput
 
 %%
 
