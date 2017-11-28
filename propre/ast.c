@@ -188,11 +188,11 @@ void ast_destroy(ast* src)
 			}
 		}
 		
-		if(src->nextInstr != NULL)
+		if(src->nextInstr != NULL) //Invalid read ici... pourquoi pas...
 		{
 			ast_destroy(src->nextInstr);
 		}
-		
+		free(src);
 	}
 }
 

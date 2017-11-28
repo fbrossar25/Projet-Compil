@@ -49,11 +49,11 @@ struct code {
 
 struct code * code_new();
 
-void gencode(struct code * c,
+void gencode(struct code* c,
               enum quad_kind k,
-              struct symbol * s1,
-              struct symbol * s2,
-              struct symbol * s3);
+              struct symbol* s1,
+              struct symbol* s2,
+              struct symbol* s3);
 
 struct symbol *newtemp(struct symtable * t);
 

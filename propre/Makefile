@@ -17,12 +17,12 @@ GENERATED = lex.yy.c y.tab.c
 INPUT = input.txt
 
 #fichiers sources
-SRC = ast symbol lib
+SRC = ast lib
 OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 
 #compilation du projet
-all: $(EXEC)
+all: $(EXEC) clean
 
 $(EXEC): $(OBJ) $(GENERATED)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
