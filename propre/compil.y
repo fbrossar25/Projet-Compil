@@ -197,15 +197,20 @@ void parsing_ok(ast* src)
 		printf("Aucun AST n'as été produit\n");
 	}
 	ast_print(src,0);
-	int val = ast_eval(src);
-	printf("valeur de l'expression : %d !\n", val);
-	//struct symtable* t = symtable_new();
-	//struct code * c = code_new();
-	//astGencode(src,t,c);
-	//code_dump(c);
-	ast_destroy(src);
-	destroy_ast_list(); //résoud le problème d'un double free
+	//int val = ast_eval(src);
+	//printf("valeur de l'expression : %d !\n", val);
+	printf("========== TABLE =========\n");
+	struct symtable* t = symtable_new();
+	struct code * c = code_new();
+	astGencode(src,t,c);
+	code_dump(c);
 	printf("=========================\n");
+	
+	//ici on désalloue toutes allocations
+	ast_destroy(src);
+	code_free(c);
+	symtable_free(t);
+	destroy_ast_list(); //résoud le problème d'un double free
 	yylex_destroy();
 	//sans allocation de notre part, il ne devrai y avoir que
 	//4o definitely lost en 2 blocks

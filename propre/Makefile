@@ -29,10 +29,10 @@ $(EXEC): $(OBJ) $(GENERATED)
 	rm -f *.o
 
 lex.yy.c: $(EXEC).l
-	$(FLEX) $(EXEC).l
+	$(FLEX) $<
 
 y.tab.c: $(EXEC).y
-	$(YACC) $(EXEC).y
+	$(YACC) $<
 
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
