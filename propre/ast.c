@@ -1,11 +1,49 @@
 #include "ast.h"
+static ast_list* astList = NULL;
 
 ast* ast_alloc()
 {
   ast* new = malloc(sizeof(ast));
   new->type = NULL;
   new->nextInstr = NULL;
+	add_to_ast_list(new);
   return new;
+}
+
+void add_to_ast_list(ast* new)
+{
+	if(astList == NULL)
+	{
+		astList = malloc(sizeof(ast_list));
+		astList->node = new;
+		astList->next = NULL;
+		return;
+	}
+
+	ast_list* scan = astList;
+	while(scan->next != NULL)
+	{
+		scan = scan->next;
+	}
+	scan->next = malloc(sizeof(ast_list));
+	scan = scan->next;
+	scan->node = new;
+	scan->next = NULL;
+}
+
+void destroy_ast_list()
+{
+	ast_list* tmp;
+	while(astList != NULL)
+	{
+		tmp = astList->next;
+		if(astList->node != NULL)
+		{
+			free(astList->node);
+		}
+		free(astList);
+		astList = tmp;
+	}
 }
 
 ast* ast_new_operation(char* op, ast* left, ast* right)
@@ -192,7 +230,11 @@ void ast_destroy(ast* src)
 		{
 			ast_destroy(src->nextInstr);
 		}
-		free(src);
+		/*if(src != NULL)
+		{
+			printf("src free addr : %p\n",src);
+			free(src);
+		}*/
 	}
 }
 
@@ -242,12 +284,11 @@ int  ast_eval(ast* src)
 				val = - (ast_eval(src->u.op.left)) ; 
 			}
 		}
-			
-	}
 		
-	if(src->nextInstr != NULL)
-	{
-		val = ast_eval(src->nextInstr);
+		if(src->nextInstr != NULL)
+		{
+			val = ast_eval(src->nextInstr);
+		}
 	}
 	return val ;
 }

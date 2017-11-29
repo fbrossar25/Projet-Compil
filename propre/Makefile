@@ -22,10 +22,11 @@ OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 
 #compilation du projet
-all: $(EXEC) clean
+all: $(EXEC)
 
 $(EXEC): $(OBJ) $(GENERATED)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	rm -f *.o
 
 lex.yy.c: $(EXEC).l
 	$(FLEX) $(EXEC).l
@@ -37,7 +38,7 @@ y.tab.c: $(EXEC).y
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm -rf *.o $(GENERATED)
+	rm -f *.o $(GENERATED)
 
 test: all $(EXEC)
 	cat $(INPUT) | ./$(EXEC)

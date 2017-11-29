@@ -8,6 +8,11 @@
 
 //type : INT | FCT | ID | operateur (+,-,=, etc...)
 
+typedef struct ast_list{
+    struct ast* node;
+    struct ast_list* next;
+} ast_list;
+
 typedef struct ast {
     char* type;
     union {
@@ -38,5 +43,7 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c);
 void ast_free_node(ast* node);
 void ast_destroy(ast* root);
 int  ast_eval(ast* src);
+void destroy_ast_list();
+void add_to_ast_list(ast* new);
 
 #endif

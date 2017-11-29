@@ -204,11 +204,12 @@ void parsing_ok(ast* src)
 	//astGencode(src,t,c);
 	//code_dump(c);
 	ast_destroy(src);
+	destroy_ast_list(); //résoud le problème d'un double free
 	printf("=========================\n");
 	yylex_destroy();
 	//sans allocation de notre part, il ne devrai y avoir que
 	//4o definitely lost en 2 blocks
-	// et 5 octets still reachable en 1 blocks
+	//et 5 octets still reachable en 1 blocks
 	exit(EXIT_SUCCESS);
 }
 
