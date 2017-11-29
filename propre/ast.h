@@ -6,7 +6,7 @@
 #include <string.h>
 #include "lib.h"
 
-//type : INT | FCT | ID | operateur (+,-,=, etc...)
+//type : INT | FCT | ID | RETURN | operateur (+,-,=, etc...)
 
 typedef struct ast_list{
     struct ast* node;
@@ -28,6 +28,9 @@ typedef struct ast {
             struct ast* expr;
             char* id;
         } affect;
+        struct {
+            struct ast* retVal;
+        } ret;
         int number;
     } u;
     struct ast* nextInstr;
@@ -38,6 +41,7 @@ ast* ast_new_operation(char* op, ast* left, ast* right);
 ast* ast_new_fonction(char* fct, ast* bloc);
 ast* ast_new_id(char* id, ast* expr);
 ast* ast_new_entier(int entier);
+ast* ast_new_retour(int entier);
 void ast_print(ast* src, int indent);
 struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c);
 void ast_free_node(ast* node);

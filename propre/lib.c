@@ -32,7 +32,7 @@ struct symbol * symtable_const(struct symtable * t, long int v)
         struct symbol *s = &(t->symbols[t->size]);
         s->kind = CONSTANT;
         s->u.value = v;
-        ++ (t->size);
+        t->size++;
         return s;
     }
     else 
@@ -57,7 +57,7 @@ struct symbol * symtable_put(struct symtable * t, const char * id)
     struct symbol *s = &(t->symbols[t->size]);
     s->kind = NAME;
     strcpy(s->u.name,id);
-    ++ (t->size);
+    t->size++;
     return s;
 }
 

@@ -4,7 +4,7 @@ EXEC = compil
 #compilateur, analyseurs
 CC = gcc
 YACC = yacc -d -Wall -v
-FLEX = flex -d
+FLEX = flex #-d
 
 #flages de compilation
 LDFLAGS = -ly -ll -lfl
@@ -22,7 +22,7 @@ OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 
 #compilation du projet
-all: $(EXEC)
+all: mrproper $(EXEC)
 
 $(EXEC): $(OBJ) $(GENERATED)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
@@ -40,14 +40,14 @@ y.tab.c: $(EXEC).y
 clean:
 	rm -f *.o $(GENERATED)
 
-test: all $(EXEC)
-	cat $(INPUT) | ./$(EXEC)
+test: all
+	./$(EXEC) $(INPUT)
 
-valgrind: all $(EXEC)
+valgrind: all
 	valgrind ./$(EXEC)
 
-valgrind-test: all $(EXEC)
-	cat $(INPUT) | valgrind ./$(EXEC)
+valgrind-test: all
+	valgrind ./$(EXEC) $(INPUT)
 
 vt : valgrind-test
 
@@ -55,3 +55,6 @@ mrproper: clean
 	rm -f $(EXEC) y.output
 
 remake: mrproper all
+
+gdb: all
+	gdb $(EXEC)

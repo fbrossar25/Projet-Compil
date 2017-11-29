@@ -82,6 +82,14 @@ ast* ast_new_entier(int entier)
   return new;
 }
 
+ast* ast_new_retour(int entier)
+{
+  ast* new = ast_alloc();
+  new->type = strdup("RETURN");
+  new->u.ret.retVal = ast_new_entier(entier);
+  return new;
+}
+
 void ast_print(ast* src, int indent)
 {
   if(src == NULL)
@@ -135,15 +143,17 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		{
 			free(src);
 		}
+		else if(strcmp(src->type, "RETURN") == 0)
+		{
+			s = symtable_const(t,src->u.ret.retVal->u.number);		
+		}
 		else if(strcmp(src->type, "INT") == 0)
 		{
 			s = symtable_const(t,src->u.number);		
-			
 		}
 		else if(strcmp(src->type, "ID") == 0)
 		{
 			s = symtable_put(t,src->u.affect.id );
-			
 			gencode(c,EQUAL,s,astGencode(src->u.affect.expr,t,c),newtemp(t));
 		}
 		else if(strcmp(src->type, "FCT") == 0)
@@ -195,6 +205,12 @@ void ast_destroy(ast* src)
 		}
 		else if(strcmp(src->type, "INT") == 0)
 		{
+			ast_destroy(src->u.ret.retVal);
+			free(src->type);
+			free(src);
+		}
+		else if(strcmp(src->type, "INT") == 0)
+		{
 			free(src->type);
 			free(src);
 		}
@@ -229,15 +245,10 @@ void ast_destroy(ast* src)
 		{
 			ast_destroy(src->nextInstr);
 		}
-		/*if(src != NULL)
-		{
-			printf("src free addr : %p\n",src);
-			free(src);
-		}*/
 	}
 }
 
-int  ast_eval(ast* src)
+int ast_eval(ast* src)
 {
 	int val = 0;
 	if(src !=NULL)
