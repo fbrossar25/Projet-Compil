@@ -1,65 +1,65 @@
+#ifndef LIB_H
+#define LIB_H
 
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 /* TABLE DES SYMBOLES */
 
 typedef char name_t[8];
 
-struct symbol {
+typedef struct symbol {
   enum { NAME, CONSTANT } kind;
     union {
         name_t name;
         long int value;
     } u;
-};
+} symbol;
 
-struct symtable {
+typedef struct symtable {
     unsigned int capacity;
     unsigned int temporary; 
     unsigned int size;
-    struct symbol * symbols;
-};
+    symbol* symbols;
+} symtable;
 
-struct symtable * symtable_new();
+struct symtable* symtable_new();
 
-struct symbol * symtable_const(struct symtable * t, long int v);
+symbol* symtable_const(symtable* t, long int v);
 
-struct symbol * symtable_get(struct symtable * t, const char * s);
+symbol* symtable_get(symtable* t, const char * s);
 
-struct symbol * symtable_put(struct symtable * t, const char * s);
+symbol* symtable_put(symtable* t, const char * s);
 
-void symtable_dump(struct symtable * t);
+void symtable_dump(symtable* t);
 
-void symtable_free(struct symtable * t);
+void symtable_free(symtable* t);
 
 
 /* QUADRUPLETS ET CODE */
 
-struct quad {
-  enum quad_kind { BOP_PLUS, BOP_MINUS, BOP_MULT,BOP_DIV,UOP_MINUS,EQUAL, COPY, CALL_PRINT } kind;
-  struct symbol * sym1;
-  struct symbol * sym2;
-  struct symbol * sym3;
-};
+typedef struct quad {
+  enum quad_kind { BOP_PLUS, BOP_MINUS, BOP_MULT, BOP_DIV, UOP_MINUS, EQUAL, COPY, CALL_PRINT } kind;
+  symbol* sym1;
+  symbol* sym2;
+  symbol* sym3;
+} quad;
 
-struct code {
+typedef struct code {
     unsigned int capacity;
     unsigned int nextquad;
-    struct quad * quads;
-};
+    quad* quads;
+} code;
 
-struct code * code_new();
+code* code_new();
 
-void gencode(struct code* c,
-              enum quad_kind k,
-              struct symbol* s1,
-              struct symbol* s2,
-              struct symbol* s3);
+void gencode(code* c, enum quad_kind k, symbol* s1, symbol* s2, symbol* s3);
 
-struct symbol *newtemp(struct symtable * t);
+symbol* newtemp(struct symtable * t);
 
-void code_dump(struct code * c);
+void code_dump(code* c);
 
-void code_free(struct code * c);
+void code_free(code* c);
 
-
-
+#endif

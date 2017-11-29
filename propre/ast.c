@@ -128,7 +128,6 @@ void ast_print(ast* src, int indent)
 struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 {
 	struct symbol* s;
-	struct symbol* tmp = newtemp(t);
 	if(src !=NULL)
 	{
 		
@@ -138,41 +137,41 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		}
 		else if(strcmp(src->type, "INT") == 0)
 		{
-			s=symtable_const(t,src->u.number);		
+			s = symtable_const(t,src->u.number);		
 			
 		}
 		else if(strcmp(src->type, "ID") == 0)
 		{
-			s=symtable_put(t,src->u.affect.id );
+			s = symtable_put(t,src->u.affect.id );
 			
-			gencode(c,EQUAL,s,astGencode(src->u.affect.expr,t,c),tmp);
+			gencode(c,EQUAL,s,astGencode(src->u.affect.expr,t,c),newtemp(t));
 		}
 		else if(strcmp(src->type, "FCT") == 0)
 		{
-			s=symtable_put(t,src->u.affect.id );
+			s = symtable_put(t,src->u.affect.id );
 			astGencode(src->u.fct.block ,t,c);
 		}
 		else if(strcmp(src->type, "+") == 0)
 		{
-			gencode(c,BOP_PLUS,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+			gencode(c, BOP_PLUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
 		}
 		else if(strcmp(src->type, "/") == 0)
 		{
-			gencode(c,BOP_DIV,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+			gencode(c, BOP_DIV, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
 		}
 		else if(strcmp(src->type, "*") == 0)
 		{
-			gencode(c,BOP_MULT,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+			gencode(c, BOP_MULT, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
 		}
 		else if(strcmp(src->type, "-") == 0)
 		{
 			if(src->u.op.left != NULL)
 			{
-				 gencode(c,BOP_MINUS,astGencode(src->u.op.left,t,c) ,astGencode(src->u.op.right,t,c),tmp);
+				 gencode(c, BOP_MINUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
 			}
 			else
 			{
-				gencode(c,UOP_MINUS,NULL,astGencode(src->u.op.right,t,c),tmp);
+				gencode(c, UOP_MINUS, NULL, astGencode(src->u.op.right, t, c), newtemp(t));
 			}
 		}
 			

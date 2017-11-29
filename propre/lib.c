@@ -1,7 +1,3 @@
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include "lib.h"
 
 struct symtable * symtable_new()
@@ -99,25 +95,23 @@ static void code_grow(struct code * c)
     c->quads = realloc(c->quads,c->capacity*sizeof(struct quad));
     if(c->quads == NULL) 
     {
-      fprintf(stderr,"Error attempting to grow quad list (actual size is %d)\n",c->nextquad);
+        fprintf(stderr,"Error attempting to grow quad list (actual size is %d)\n",c->nextquad);
         exit(1);
     }
 }
 
-void gencode(struct code* c,
-              enum quad_kind k,
-              struct symbol* s1,
-              struct symbol* s2,
-              struct symbol* s3)
+void gencode(struct code* c, enum quad_kind k, struct symbol* s1, struct symbol* s2, struct symbol* s3)
 {
     if ( c->nextquad == c->capacity )
+    {
         code_grow(c);
+    }
     struct quad * q = &(c->quads[c->nextquad]);
     q->kind = k;
     q->sym1 = s1;
     q->sym2 = s2;
     q->sym3 = s3;
-    ++ (c->nextquad);
+    c->nextquad++;
 }
 
 struct symbol *newtemp(struct symtable * t)
@@ -126,7 +120,7 @@ struct symbol *newtemp(struct symtable * t)
   name_t name;
   sprintf(name,"t%d",t->temporary);
   s = symtable_put(t,name);
-  ++ (t->temporary);
+  t->temporary++;
   return s;
 }
 
