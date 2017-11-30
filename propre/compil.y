@@ -208,16 +208,24 @@ void parsing_ok(ast* src)
 		printf("Aucun AST n'as été produit\n");
 	}
 	ast_print(src,0);
+/*<<<<<<< Updated upstream*/
 	//int val = ast_eval(src);
 	//printf("valeur de l'expression : %d !\n", val);
 	printf("========== TABLE =========\n");
+/*=======*/
+	int val = ast_eval(src);
+	printf("valeur de l'expression : %d !\n", val);
+/*>>>>>>> Stashed changes*/
 	struct symtable* t = symtable_new();
 	struct code * c = code_new();
 	astGencode(src,t,c);
 	code_dump(c);
+/*<<<<<<< Updated upstream*/
 	printf("=========================\n");
 	
 	//ici on désalloue toutes allocations
+/*=======
+>>>>>>> Stashed changes*/
 	ast_destroy(src);
 	code_free(c);
 	symtable_free(t);
