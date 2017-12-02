@@ -149,33 +149,47 @@ static void quad_dump(struct quad * q)
     switch ( q->kind )
     {
         case BOP_PLUS:
-            symbol_dump(q->sym1);
-            printf(" := ");
-            symbol_dump(q->sym2);
-            printf(" + ");
             symbol_dump(q->sym3);
+            printf(" := ");
+            symbol_dump(q->sym1);
+            printf(" + ");
+            symbol_dump(q->sym2);
             break;
         case BOP_MINUS:
+            symbol_dump(q->sym3);
+            printf(" := ");
             symbol_dump(q->sym1);
+            printf(" - ");
+            symbol_dump(q->sym2);
+            break;
+        case EQUAL:
+            symbol_dump(q->sym3);
             printf(" := ");
             symbol_dump(q->sym2);
-            printf(" - ");
-            symbol_dump(q->sym3);
+            printf(" = ");
+            symbol_dump(q->sym1);
             break;
         case BOP_MULT:
-            symbol_dump(q->sym1);
-            printf(" := ");
-            symbol_dump(q->sym2);
-            printf(" * ");
             symbol_dump(q->sym3);
+            printf(" := ");
+            symbol_dump(q->sym1);
+            printf(" * ");
+            symbol_dump(q->sym2);
+            break;
+        case BOP_DIV:
+            symbol_dump(q->sym3);
+            printf(" := ");
+            symbol_dump(q->sym1);
+            printf(" / ");
+            symbol_dump(q->sym2);
             break;
         case UOP_MINUS:
-            symbol_dump(q->sym1);
+            symbol_dump(q->sym3);
             printf(" := ");
             printf("- ");
             symbol_dump(q->sym2);
             break;
-        case CALL_PRINT:
+       /* case CALL_PRINT:
             printf("print ");
             symbol_dump(q->sym1);
             break;
@@ -183,7 +197,7 @@ static void quad_dump(struct quad * q)
             symbol_dump(q->sym1);
             printf(" := ");
             symbol_dump(q->sym2);
-            break;
+            break;*/
         default:
             printf("BUG\n");
             break;

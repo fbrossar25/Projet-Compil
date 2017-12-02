@@ -225,11 +225,11 @@ void parsing_ok(ast* src)
 	
 	//ici on désalloue toutes allocations
 /*=======
->>>>>>> Stashed changes*/
+>>>>>>> Stashed changes
 	ast_destroy(src);
 	code_free(c);
 	symtable_free(t);
-	destroy_ast_list(); //résoud le problème d'un double free
+	destroy_ast_list(); //résoud le problème d'un double free*/
 	yylex_destroy();
 	//sans allocation de notre part, il ne devrai y avoir que
 	//4o definitely lost en 2 blocks

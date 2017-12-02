@@ -163,6 +163,7 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		}
 		else if(strcmp(src->type, "+") == 0)
 		{
+		
 			gencode(c, BOP_PLUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
 		}
 		else if(strcmp(src->type, "/") == 0)
@@ -193,7 +194,6 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 	}
 	return s ;
 }
-
 
 void ast_destroy(ast* src)
 {
