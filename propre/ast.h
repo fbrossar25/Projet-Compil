@@ -31,9 +31,12 @@ typedef struct ast {
         struct {
             struct ast* retVal;
         } ret;
+        struct {
+            struct ast* instr;
+            struct ast* next;
+        } instr;
         int number;
     } u;
-    struct ast* nextInstr;
 } ast;
 
 ast* ast_alloc();
@@ -42,6 +45,7 @@ ast* ast_new_fonction(char* fct, ast* bloc);
 ast* ast_new_id(char* id, ast* expr);
 ast* ast_new_entier(int entier);
 ast* ast_new_retour(int entier);
+ast* ast_new_instr(ast* instr, ast* next);
 void ast_print(ast* src, int indent);
 struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c);
 void ast_free_node(ast* node);

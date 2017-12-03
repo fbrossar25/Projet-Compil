@@ -5,7 +5,6 @@ ast* ast_alloc()
 {
   ast* new = malloc(sizeof(ast));
   new->type = NULL;
-  new->nextInstr = NULL;
 	add_to_ast_list(new);
   return new;
 }
@@ -90,6 +89,15 @@ ast* ast_new_retour(int entier)
   return new;
 }
 
+ast* ast_new_instr(ast* instr, ast* next)
+{
+	ast* new = ast_alloc();
+	new->type = strdup("INSTR");
+	new->u.instr.instr = instr;
+	new->u.instr.next = next;
+	return new;
+}
+
 void ast_print(ast* src, int indent)
 {
   if(src == NULL)
@@ -120,6 +128,11 @@ void ast_print(ast* src, int indent)
     printf("FCT(%s)\n", src->u.fct.id);
     ast_print(src->u.fct.block, indent + 1);
   }
+	else if(strcmp(src->type, "INSTR") == 0)
+	{
+		ast_print(src->u.instr.instr,indent);
+		ast_print(src->u.instr.next,indent);
+	}
   else
   {
     printf("OP(%s)\n", src->type);
@@ -127,9 +140,9 @@ void ast_print(ast* src, int indent)
     ast_print(src->u.op.right, indent + 1);
   }
   
-  if(src->nextInstr != NULL)
+  if(src->u.instr.next != NULL)
   {
-    ast_print(src->nextInstr, indent);
+    ast_print(src->u.instr.next, indent);
   }
 }
 
@@ -146,6 +159,11 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		else if(strcmp(src->type, "RETURN") == 0)
 		{
 			s = symtable_const(t,src->u.ret.retVal->u.number);		
+		}
+		else if(strcmp(src->type, "INSTR") == 0)
+		{
+			astGencode(src->u.instr.instr ,t,c);
+			astGencode(src->u.instr.next ,t,c);
 		}
 		else if(strcmp(src->type, "INT") == 0)
 		{
@@ -187,9 +205,9 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 			
 	}
 		
-	if(src->nextInstr != NULL)
+	if(src->u.instr.next != NULL)
 	{
-		s=astGencode(src->nextInstr,t,c);
+		s=astGencode(src->u.instr.next,t,c);
 	}
 	return s ;
 }
@@ -226,6 +244,12 @@ void ast_destroy(ast* src)
 			free(src->u.fct.id);
 			ast_destroy( src->u.fct.block);
 		}
+		else if(strcmp(src->type,"INSTR") == 0 )
+		{
+			free(src->type);
+			ast_destroy(src->u.instr.instr);
+			ast_destroy(src->u.instr.next);
+		}
 		else
 		{
 			if(src->u.op.left != NULL)
@@ -239,11 +263,6 @@ void ast_destroy(ast* src)
 				free(src->type);
 				ast_destroy(src->u.op.right);
 			}
-		}
-		
-		if(src->nextInstr != NULL) //Invalid read ici... pourquoi pas...
-		{
-			ast_destroy(src->nextInstr);
 		}
 	}
 }
@@ -295,9 +314,9 @@ int ast_eval(ast* src)
 			}
 		}
 		
-		if(src->nextInstr != NULL)
+		if(src->u.instr.next != NULL)
 		{
-			val = ast_eval(src->nextInstr);
+			val = ast_eval(src->u.instr.next);
 		}
 	}
 	return val ;

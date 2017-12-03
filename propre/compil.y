@@ -93,8 +93,7 @@ bloc:
 		}
 	|	'{'	instructions retour ';' '}'
 		{
-			$$ = $2;
-			$$->nextInstr = $3;
+			$$ = ast_new_instr($2,$3);
 		}
 	;
 
@@ -112,8 +111,7 @@ instructions:
 		}
 	|	instruction instructions
 		{
-			$$ = $1;
-			$$->nextInstr = $2;
+			$$ = ast_new_instr($1,$2);
 		}
 	;
 
