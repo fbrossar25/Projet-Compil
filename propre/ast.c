@@ -3,7 +3,7 @@ static ast_list* astList = NULL;
 
 ast* ast_alloc()
 {
-  ast* new = malloc(sizeof(ast));
+  ast* new = calloc(1, sizeof(ast));
   new->type = NULL;
 	add_to_ast_list(new);
   return new;
@@ -139,11 +139,6 @@ void ast_print(ast* src, int indent)
     ast_print(src->u.op.left, indent + 1);
     ast_print(src->u.op.right, indent + 1);
   }
-  
-  if(src->u.instr.next != NULL)
-  {
-    ast_print(src->u.instr.next, indent);
-  }
 }
 
 struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
@@ -162,8 +157,8 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		}
 		else if(strcmp(src->type, "INSTR") == 0)
 		{
-			astGencode(src->u.instr.instr ,t,c);
-			astGencode(src->u.instr.next ,t,c);
+			astGencode(src->u.instr.instr, t, c);
+			astGencode(src->u.instr.next, t, c);
 		}
 		else if(strcmp(src->type, "INT") == 0)
 		{
@@ -172,30 +167,30 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		else if(strcmp(src->type, "ID") == 0)
 		{
 			s = symtable_put(t,src->u.affect.id );
-			gencode(c,EQUAL,s,astGencode(src->u.affect.expr,t,c),newtemp(t));
+			gencode(c,COPY,s,astGencode(src->u.affect.expr,t,c),newtemp(t));
 		}
 		else if(strcmp(src->type, "FCT") == 0)
 		{
-			s = symtable_put(t,src->u.affect.id );
+			s = symtable_put(t,src->u.affect.id);
 			astGencode(src->u.fct.block ,t,c);
 		}
 		else if(strcmp(src->type, "+") == 0)
 		{
-			gencode(c, BOP_PLUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+			gencode(c, BOP_PLUS, newtemp(t), astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c));
 		}
 		else if(strcmp(src->type, "/") == 0)
 		{
-			gencode(c, BOP_DIV, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+			gencode(c, BOP_DIV, newtemp(t), astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c));
 		}
 		else if(strcmp(src->type, "*") == 0)
 		{
-			gencode(c, BOP_MULT, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+			gencode(c, BOP_MULT, newtemp(t), astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c));
 		}
 		else if(strcmp(src->type, "-") == 0)
 		{
 			if(src->u.op.left != NULL)
 			{
-				 gencode(c, BOP_MINUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+				 gencode(c, BOP_MINUS, newtemp(t), astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c));
 			}
 			else
 			{
@@ -204,67 +199,13 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		}
 			
 	}
-		
-	if(src->u.instr.next != NULL)
-	{
-		s=astGencode(src->u.instr.next,t,c);
-	}
 	return s ;
 }
 
 
 void ast_destroy(ast* src)
 {
-	if(src !=NULL)
-	{
-		if(src->type == NULL)
-		{
-			free(src);
-		}
-		else if(strcmp(src->type, "INT") == 0)
-		{
-			ast_destroy(src->u.ret.retVal);
-			free(src->type);
-			free(src);
-		}
-		else if(strcmp(src->type, "INT") == 0)
-		{
-			free(src->type);
-			free(src);
-		}
-		else if(strcmp(src->type, "ID") == 0)
-		{
-			free(src->type);
-			free(src->u.affect.id);
-			ast_destroy(src->u.affect.expr );
-		}
-		else if(strcmp(src->type, "FCT") == 0)
-		{
-			free(src->type);
-			free(src->u.fct.id);
-			ast_destroy( src->u.fct.block);
-		}
-		else if(strcmp(src->type,"INSTR") == 0 )
-		{
-			free(src->type);
-			ast_destroy(src->u.instr.instr);
-			ast_destroy(src->u.instr.next);
-		}
-		else
-		{
-			if(src->u.op.left != NULL)
-			{
-				free(src->type);
-				ast_destroy(src->u.op.left);	
-				ast_destroy(src->u.op.right);	
-			}
-			else
-			{
-				free(src->type);
-				ast_destroy(src->u.op.right);
-			}
-		}
-	}
+	
 }
 
 int ast_eval(ast* src)
@@ -290,6 +231,10 @@ int ast_eval(ast* src)
 		{
 			val = ast_eval(src->u.fct.block);
 		}
+		else if(strcmp(src->type, "INSTR") == 0)
+		{
+			// ?
+		}
 		else if(strcmp(src->type, "+") == 0)
 		{
 			val = ast_eval(src->u.op.left) + ast_eval(src->u.op.right) ; 
@@ -312,11 +257,6 @@ int ast_eval(ast* src)
 			{
 				val = - (ast_eval(src->u.op.left)) ; 
 			}
-		}
-		
-		if(src->u.instr.next != NULL)
-		{
-			val = ast_eval(src->u.instr.next);
 		}
 	}
 	return val ;
