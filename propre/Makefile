@@ -11,10 +11,12 @@ LDFLAGS = -ly -ll -lfl
 CFLAGS = -Wall -std=gnu99 -g
 
 #fichier générés par flex et yacc (sauf y.output)
-GENERATED = lex.yy.c y.tab.c
+GENERATED = lex.yy.c y.tab.c y.tab.h
 
 #fichier d'entrée pour make test
 INPUT = input.txt
+
+VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 
 #fichiers sources
 SRC = ast lib
@@ -44,10 +46,10 @@ test: all
 	./$(EXEC) $(INPUT)
 
 valgrind: all
-	valgrind ./$(EXEC)
+	valgrind $(VALGRIND) ./$(EXEC)
 
 valgrind-test: all
-	valgrind --track-origins=yes ./$(EXEC) $(INPUT)
+	valgrind $(VALGRIND) ./$(EXEC) $(INPUT)
 
 vt : valgrind-test
 
