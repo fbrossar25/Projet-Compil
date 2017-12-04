@@ -71,7 +71,6 @@ void symtable_dump(struct symtable * t)
       if(t->symbols[i].kind==NAME)
         printf("       %p = %s\n",&(t->symbols[i]),t->symbols[i].u.name);
     }
-    printf("       --------\n");
 }
 
 void symtable_free(struct symtable * t)
@@ -162,13 +161,6 @@ static void quad_dump(struct quad * q)
             printf(" - ");
             symbol_dump(q->sym2);
             break;
-        case EQUAL:
-            symbol_dump(q->sym3);
-            printf(" := ");
-            symbol_dump(q->sym2);
-            printf(" = ");
-            symbol_dump(q->sym1);
-            break;
         case BOP_MULT:
             symbol_dump(q->sym3);
             printf(" := ");
@@ -189,7 +181,7 @@ static void quad_dump(struct quad * q)
             printf("- ");
             symbol_dump(q->sym2);
             break;
-       /* case CALL_PRINT:
+        case CALL_PRINT:
             printf("print ");
             symbol_dump(q->sym1);
             break;
@@ -197,7 +189,7 @@ static void quad_dump(struct quad * q)
             symbol_dump(q->sym1);
             printf(" := ");
             symbol_dump(q->sym2);
-            break;*/
+            break;
         default:
             printf("BUG\n");
             break;

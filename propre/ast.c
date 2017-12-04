@@ -141,7 +141,7 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		
 		if(src->type == NULL)
 		{
-			free(src);
+			fprintf(stderr,"erreur : type ast non renseigné\n");
 		}
 		else if(strcmp(src->type, "RETURN") == 0)
 		{
@@ -154,7 +154,7 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		else if(strcmp(src->type, "ID") == 0)
 		{
 			s = symtable_put(t,src->u.affect.id );
-			gencode(c,EQUAL,s,astGencode(src->u.affect.expr,t,c),newtemp(t));
+			gencode(c,COPY,s,astGencode(src->u.affect.expr,t,c),NULL);
 		}
 		else if(strcmp(src->type, "FCT") == 0)
 		{
@@ -163,26 +163,29 @@ struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
 		}
 		else if(strcmp(src->type, "+") == 0)
 		{
-		
-			gencode(c, BOP_PLUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+			s = newtemp(t);
+			gencode(c, BOP_PLUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), s);
 		}
 		else if(strcmp(src->type, "/") == 0)
 		{
-			gencode(c, BOP_DIV, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+			s = newtemp(t);
+			gencode(c, BOP_DIV, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), s);
 		}
 		else if(strcmp(src->type, "*") == 0)
 		{
-			gencode(c, BOP_MULT, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+			s = newtemp(t);
+			gencode(c, BOP_MULT, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), s);
 		}
 		else if(strcmp(src->type, "-") == 0)
 		{
+			s = newtemp(t);
 			if(src->u.op.left != NULL)
 			{
-				 gencode(c, BOP_MINUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), newtemp(t));
+				 gencode(c, BOP_MINUS, astGencode(src->u.op.left, t, c), astGencode(src->u.op.right, t, c), s);
 			}
 			else
 			{
-				gencode(c, UOP_MINUS, NULL, astGencode(src->u.op.right, t, c), newtemp(t));
+				gencode(c, UOP_MINUS, astGencode(src->u.op.right, t, c), NULL, s);
 			}
 		}
 			
