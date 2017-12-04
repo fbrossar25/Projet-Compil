@@ -204,18 +204,12 @@ void ast_destroy(ast* src)
 	{
 		if(src->type == NULL)
 		{
-			free(src);
-		}
-		else if(strcmp(src->type, "INT") == 0)
-		{
-			ast_destroy(src->u.ret.retVal);
-			free(src->type);
+			fprintf(stderr, "Erreur : un type d'ast n'a pas été renseigné\n");
 			free(src);
 		}
 		else if(strcmp(src->type, "INT") == 0)
 		{
 			free(src->type);
-			free(src);
 		}
 		else if(strcmp(src->type, "ID") == 0)
 		{
@@ -228,6 +222,11 @@ void ast_destroy(ast* src)
 			free(src->type);
 			free(src->u.fct.id);
 			ast_destroy( src->u.fct.block);
+		}
+		else if(strcmp(src->type, "RETURN") == 0)
+		{
+			free(src->type);
+			ast_destroy( src->u.ret.retVal);
 		}
 		else
 		{

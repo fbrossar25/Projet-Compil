@@ -47,7 +47,7 @@ valgrind: all
 	valgrind ./$(EXEC)
 
 valgrind-test: all
-	valgrind ./$(EXEC) $(INPUT)
+	valgrind --track-origins=yes ./$(EXEC) $(INPUT)
 
 vt : valgrind-test
 

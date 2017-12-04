@@ -213,18 +213,18 @@ void parsing_ok(ast* src)
 	//printf("valeur de l'expression : %d !\n", val);
 	printf("========== TABLE =========\n");
 
-	struct symtable* t = symtable_new();
-	struct code * c = code_new();
-	astGencode(src,t,c);
-	symtable_dump(t);
+	//struct symtable* t = symtable_new();
+	//struct code * c = code_new();
+	//astGencode(src,t,c);
+	//symtable_dump(t);
 
 	printf("========== CODE ==========\n");
-	code_dump(c);
+	//code_dump(c);
 	//ici on désalloue toutes allocations
 
 	ast_destroy(src);
-	code_free(c);
-	symtable_free(t);
+	//code_free(c);
+	//symtable_free(t);
 	destroy_ast_list(); //résoud le problème d'un double free
 	yylex_destroy();
 	//sans allocation de notre part, il ne devrai y avoir que
