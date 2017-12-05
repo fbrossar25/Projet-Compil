@@ -10,7 +10,7 @@
 typedef char name_t[8];
 
 typedef struct symbol {
-  enum { NAME, CONSTANT } kind;
+  enum symbol_kind { NAME, CONSTANT } kind;
     union {
         name_t name;
         long int value;

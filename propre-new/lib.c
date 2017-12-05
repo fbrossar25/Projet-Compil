@@ -71,7 +71,7 @@ void symtable_dump(struct symtable * t)
       if(t->symbols[i].kind==NAME)
         printf("       %p = %s\n",&(t->symbols[i]),t->symbols[i].u.name);
     }
-    printf("       --------\n");
+    //printf("       --------\n");
 }
 
 void symtable_free(struct symtable * t)

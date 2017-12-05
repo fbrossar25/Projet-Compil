@@ -119,11 +119,74 @@ ast* ast_new_action(ast* instruction, ast* action)
 }
 
 
-struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c)
+struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 {
-	return NULL;
+	struct symbol* s = NULL;
+	if(src !=NULL)
+	{
+		switch(src->type)
+		{
+			case BIN_OP://BOP_PLUS, BOP_MINUS, BOP_MULT, BOP_DIV
+				s = newtemp(t);
+				struct ast* left = src->u.binop.left;
+				struct ast* right = src->u.binop.right;
+				if(strcmp(src->u.binop.op,"+") == 0)
+				{
+					gencode(c, BOP_PLUS, s, astGencode(left,t,c), astGencode(right,t,c));
+				}
+				else if(strcmp(src->u.binop.op, "-") == 0)
+				{
+					gencode(c, BOP_MINUS, s, astGencode(left,t,c), astGencode(right,t,c));
+				}
+				else if(strcmp(src->u.binop.op, "*") == 0)
+				{
+					gencode(c, BOP_MULT, s, astGencode(left,t,c), astGencode(right,t,c));
+				}
+				else if(strcmp(src->u.binop.op, "/") == 0)
+				{
+					gencode(c, BOP_DIV, s, astGencode(left,t,c), astGencode(right,t,c));
+				}
+				break;
+			case UN_OP:
+				if(strcmp(src->u.unop.op, "-") == 0)
+				{
+					s = newtemp(t);
+					gencode(c, UOP_MINUS, s, astGencode(src->u.binop.right, t, c), NULL);
+				}
+				break;
+			case FOR_STMT:
+				//TODO
+				break;
+			case IF_STMT:
+				//TODO
+				break;
+			case FCT:
+				s = symtable_put(t,src->u.fct.name);
+				astGencode(src->u.fct.action ,t,c);
+				break;
+			case AFFECT:
+				gencode(c,COPY,astGencode(src->u.affect.id,t,c),
+								astGencode(src->u.affect.expr,t,c),NULL);
+				break;
+			case IDENTIFIER:
+				s = symtable_put(t,src->u.id);
+				break;
+			case INT:
+				s = symtable_const(t,src->u.nombre);
+				break;
+			case ACTION:
+				astGencode(src->u.action.instruction,t,c);
+				s = astGencode(src->u.action.action,t,c);
+				break;
+			case WHILE_STMT:
+				//TODO
+				break;
+			default:
+				fprintf(stderr, "Erreur : type ast non renseigné\n");
+		}
+	}
+	return s ;
 }
-
 
 
 //Fait appel aux fonctions ast_free_[TYPE AST]

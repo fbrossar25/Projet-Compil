@@ -5,48 +5,51 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "lib.h"
+
 typedef struct ast {
-    enum {
+    enum ast_type {
 			BIN_OP, UN_OP, FOR_STMT,
 			IF_STMT, FCT, AFFECT, IDENTIFIER,
 			INT, ACTION, WHILE_STMT
 	} type;
     union{
-		struct {
+		struct { //opérateur unaire ( le - unaire, goto)
 			char* op;
 			struct ast* fils;
 		}unop;
-		struct {
+		struct { //opérateur binaire
 			char* op;
 			struct ast* left;
 			struct ast* right;
 		}binop;
 		struct {
-			char* name;
-			struct ast* action;
-			struct ast* retour;
+			//char* type; //type de retour
+			char* name; //nom de la fonction
+			struct ast* action; //block d'instruction
+			struct ast* retour; //instruction de retour
 		}fct;
 		struct{
-			struct ast* condition;
-			struct ast* action;
-			struct ast* els;
+			struct ast* condition; //condition
+			struct ast* action; //block if
+			struct ast* els; //block else
 		}ifstmt;
 		struct {
-			struct ast* min;
-			struct ast* max;
-			struct ast* incr;
-			struct ast* action;
+			struct ast* min; //int i = 0;
+			struct ast* max; //i < x;
+			struct ast* incr; //i++
+			struct ast* action; //block for
 		}forstmt;
 		struct{
+			struct ast* id; // id = expr
 			struct ast* expr;
-			struct ast* id;
 		}affect;
 		struct{
-			struct ast* instruction;
-			struct ast* action;
+			struct ast* instruction; //instruction en cours
+			struct ast* action; //instruction suivante
 		}action;
-		char* id;
-		int nombre;
+		char* id; //identifieur
+		int nombre; //entier
     }u;
 } ast;
 
@@ -60,7 +63,7 @@ ast* ast_new_for(ast* min, ast* max, ast* incr, ast* action);
 ast* ast_new_unop(char* op, ast* fils);
 ast* ast_new_binop(char* op, ast* left, ast* right);
 ast* ast_new_action(ast* instruction, ast* action);
-struct symbol*  astGencode(ast* src,struct symtable* t, struct code* c);
+struct symbol* astGencode(ast* src, struct symtable* t, struct code* c);
 void ast_print(ast* ast, int tab);
 void ast_free(ast* ast);
 

@@ -71,7 +71,7 @@ axiom:
 			parsing_ok($1);
 			return 0;
 		}
-	|	condition
+	|	action
 		{
 			parsing_ok($1);
 			return 0;
@@ -271,10 +271,15 @@ void parsing_ok(ast* ast)
 	printf("\n===== AST =====\n\n");
 	ast_print(ast, 0);
 	printf("\n===== SYMBOLS =====\n\n");
-
+	symtable* t = symtable_new();
+	code* c = code_new();
+	astGencode(ast,t,c);
+	symtable_dump(t);
 	printf("\n===== QUADS =====\n\n");
-
+	code_dump(c);
 	ast_free(ast);
+	symtable_free(t);
+	code_free(c);
 }
 
 int main(int argc, char* argv[]) {
