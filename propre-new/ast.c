@@ -36,6 +36,7 @@ ast* ast_alloc()
 
 ast* ast_new_id(char* id)
 {
+	printf("@ast_new_id(%s)\n",id);
 	ast* new = ast_alloc();
 	new->type = IDENTIFIER;
 	new->u.id = strdup(id);
@@ -169,7 +170,14 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 								astGencode(src->u.affect.expr,t,c),NULL);
 				break;
 			case IDENTIFIER:
-				s = symtable_put(t,src->u.id);
+				s = symtable_get(t,src->u.id);
+				printf("trying to get symbol'%s', got ",src->u.id);
+				if(s == NULL)
+					printf("NULL\n");
+				else if(s->kind == CONSTANT)
+					printf("constant %ld\n", s->u.value);
+				else
+					printf("name '%s'\n", s->u.name);
 				break;
 			case INT:
 				s = symtable_const(t,src->u.nombre);

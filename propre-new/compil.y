@@ -2,6 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "ast.h"
+	#include "lib.h"
 
 	//pour éviter un warning avec yylex
 	#if YYBISON
@@ -19,6 +20,9 @@
 	extern int yylineno;
 
 	extern FILE *yyin, *yyout;
+
+	symtable* t = NULL;
+	code* c = NULL;
 %}
 
 %union {
@@ -125,10 +129,15 @@ instruction:
 declaration:
 		TYPE ID
 		{
+			printf("new id : %s\n", $2);
+			symtable_put(t, $2);
 			$$ = ast_new_id($2);
 		}
 	|	TYPE affectation
 		{
+			ast* ast_id = $2->u.affect.id; //noeud id venant d'un noeud affect
+			printf("new id : %s\n", ast_id->u.id); //champ id du noeud id
+			symtable_put(t, ast_id->u.id);
 			$$ = $2;
 		}
 	;
@@ -271,8 +280,6 @@ void parsing_ok(ast* ast)
 	printf("\n===== AST =====\n\n");
 	ast_print(ast, 0);
 	printf("\n===== SYMBOLS =====\n\n");
-	symtable* t = symtable_new();
-	code* c = code_new();
 	astGencode(ast,t,c);
 	symtable_dump(t);
 	printf("\n===== QUADS =====\n\n");
@@ -284,6 +291,8 @@ void parsing_ok(ast* ast)
 
 int main(int argc, char* argv[]) {
 	FILE *in, *out;
+	t = symtable_new();
+	c =code_new();
 	if(argc <= 1)
 	{
 		printf("Entrez une expression :\n");
