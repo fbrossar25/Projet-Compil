@@ -2,3 +2,6 @@
 y.tab.*
 compil
 y.output
+.idea
+Debug
+cmake-build*
