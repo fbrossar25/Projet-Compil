@@ -85,6 +85,11 @@ void symtable_dump(struct symtable * t)
 
 void symbol_dump(symbol* s)
 {
+    if(s == NULL)
+    {
+        printf("NULL");
+        return;
+    }
     switch(s->kind)
         {
             case CONSTANT:
@@ -126,7 +131,7 @@ void symtable_free(symtable* t)
 symbol* newtemp(symtable * t)
 {
     char temp_name[TEMP_NAME_LENGTH_LIMIT];
-    snprintf(temp_name, TEMP_NAME_LENGTH_LIMIT, "tmp_%d", t->temp_num);
+    snprintf(temp_name, TEMP_NAME_LENGTH_LIMIT, "tmp%d", t->temp_num);
     t->temp_num++;
     return symtable_put(t, temp_name);
 }

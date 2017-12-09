@@ -7,11 +7,12 @@
 
 #include "lib.h"
 #include "symbol.h"
+#include "error.h"
 
 typedef enum ast_type {
 	BIN_OP, UN_OP, FOR_STMT,
 	IF_STMT, FCT, AFFECT, IDENTIFIER,
-	INT, ACTION, WHILE_STMT
+	INT, ACTION, WHILE_STMT, UNDEFINED
 } ast_type;
 
 typedef struct ast {
@@ -56,6 +57,12 @@ typedef struct ast {
     }u;
 } ast;
 
+typedef struct ast_list
+{
+	ast* node;
+	struct ast_list* next;
+} ast_list;
+
 ast* ast_alloc();
 ast* ast_new_id(char* id);
 ast* ast_new_nombre(int nombre);
@@ -69,5 +76,7 @@ ast* ast_new_action(ast* instruction, ast* action);
 struct symbol* astGencode(ast* src, struct symtable* t, struct code* c);
 void ast_print(ast* ast, int tab);
 void ast_free(ast* ast);
+void ast_free_ast_alloc();
+void ast_free_ast_alloc_list();
 
 #endif

@@ -5,12 +5,12 @@
 #include <stdio.h>
 #include <string.h>
 
-//4 est le minimum pour écrire tmp_
+//4 est le minimum pour écrire tmp
 //on peut donc déduire le nombre max de temporaire :
-//max = 10^(TEMP_NAME_LENGTH_LIMIT - 4)
-//avec TEMP_NAME_LENGTH_LIMIT 13 on donne 1 millions de temporaires
-//10^(13 - 4) = 10^9 = 1 000 000 000
-#define TEMP_NAME_LENGTH_LIMIT 13
+//max = 10^(TEMP_NAME_LENGTH_LIMIT - 3)
+//avec TEMP_NAME_LENGTH_LIMIT 12 on donne 1 millions de temporaires
+//10^(12 - 3) = 10^9 = 1 000 000 000
+#define TEMP_NAME_LENGTH_LIMIT 12
 
 typedef enum symbol_kind { NAME, CONSTANT } symbol_kind;
 

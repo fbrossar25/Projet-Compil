@@ -19,7 +19,7 @@ INPUT = input.txt
 VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 
 #fichiers sources
-SRC = ast lib symbol
+SRC = ast lib symbol error
 OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 

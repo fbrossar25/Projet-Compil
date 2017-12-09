@@ -1,5 +1,88 @@
 #include "ast.h"
 
+static ast_list* ast_alloc_list = NULL;
+
+//résout le problème d'allocation des noeuds si l'ast n'est pas complet
+static ast_list* ast_alloc_list_new()
+{
+	ast_list* new = calloc(1, sizeof(ast_list));
+	new->node = NULL;
+	new->next = NULL;
+	return new;
+}
+
+static void ast_alloc_list_add(ast* ast)
+{
+	if(ast_alloc_list == NULL)
+	{
+		ast_alloc_list = ast_alloc_list_new();
+		ast_alloc_list->node = ast;
+		return;
+	}
+
+	ast_list* scan = ast_alloc_list;
+	ast_list* new = ast_alloc_list_new();
+	new->node = ast;
+	while(scan->next != NULL)
+	{
+		scan = scan->next;
+	}
+	scan->next = new;
+}
+
+//libère les noeuds ast contenus dans ast_alloc_list
+//sans libèrer la liste elle-même
+void ast_free_ast_alloc()
+{
+	ast_list* scan = ast_alloc_list;
+	while(scan != NULL)
+	{
+		if(scan->node != NULL)
+		{
+			ast* ast = scan->node;
+			if(get_error_count() != 0)
+			{
+				switch(ast->type)
+				{
+					case UN_OP:
+						free(ast->u.unop.op);
+						break;
+					case BIN_OP:
+						free(ast->u.binop.op);
+						break;
+					case FCT:
+						free(ast->u.fct.name);
+						break;
+					case IDENTIFIER:
+						free(ast->u.id);
+						break;
+					default:
+						; //rien mais erreur si vide
+				}
+				free(ast);
+			}
+			else
+			{
+				ast_free(ast);
+			}
+		}
+		scan = scan->next;
+	}
+}
+
+//libère la liste des ast_list sans libèrer les noeuds
+void ast_free_ast_alloc_list()
+{
+	ast_list* scan = ast_alloc_list;
+	ast_list* tmp = scan;
+	while(scan != NULL)
+	{
+		scan = scan->next;
+		free(tmp);
+		tmp = scan;
+	}
+}
+
 void ast_free_binop(ast* ast);
 void ast_free_unop(ast* ast);
 void ast_free_for(ast* ast);
@@ -30,7 +113,9 @@ void print_indent(int indent)
 
 ast* ast_alloc()
 {
-	ast* new = calloc(1,sizeof(ast)); // calloc initialise tout à 0
+	ast* new = calloc(1, sizeof(ast)); // calloc initialise tout à 0
+	new->type = UNDEFINED;
+	ast_alloc_list_add(new);
 	return new;
 }
 
@@ -170,13 +255,6 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				break;
 			case IDENTIFIER:
 				s = symtable_get(t,src->u.id);
-				printf("trying to get symbol'%s', got ",src->u.id);
-				if(s == NULL)
-					printf("NULL\n");
-				else if(s->kind == CONSTANT)
-					printf("constant %d\n", s->u.value);
-				else
-					printf("name '%s'\n", s->u.name);
 				break;
 			case INT:
 				s = symtable_const(t,src->u.nombre);
@@ -241,6 +319,7 @@ void ast_free(ast *ast)
 	if(ast != NULL)
 	{
 		free(ast);
+		ast = NULL;
 	}
 }
 

@@ -1,8 +1,10 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+
 	#include "ast.h"
 	#include "lib.h"
+	#include "error.h"
 
 	//pour éviter un warning avec yylex
 	#if YYBISON
@@ -14,7 +16,8 @@
 	void parsing_ok();
 	void yylex_destroy(void);
 
-	void parsing_ok(ast* ast);
+	void parsing_ok();
+	void cleanup();
 
 	extern char* yytext;
 	extern int yylineno;
@@ -23,6 +26,17 @@
 
 	symtable* t = NULL;
 	code* c = NULL;
+	ast* root = NULL;
+
+	typedef struct dup_list
+	{
+		char* dup;
+		struct dup_list* next;
+	} dup_list;
+
+	static dup_list* dup_alloc_list = NULL;
+
+	void dup_alloc_list_add(char* dup);
 %}
 
 %union {
@@ -66,18 +80,29 @@
 //%right '=' //préséance inutile d'après yacc
 %left '+' '-'
 %left '*' '/'
+%precedence UMOINS
 
 %%
 
 axiom:
 	 	fonction 
 		{
-			parsing_ok($1);
+			root = $1;
+			if(get_error_count() == 0)
+			{
+				parsing_ok();
+			}
+			cleanup();
 			return 0;
 		}
 	|	action
 		{
-			parsing_ok($1);
+			root = $1;
+			if(get_error_count() == 0)
+			{
+				parsing_ok();
+			}
+			cleanup();
 			return 0;
 		}
 	|	%empty
@@ -147,7 +172,6 @@ affectation:
 		}
 	|	ID '=' operation
 		{
-			/* $1 donne pas l'id mais le texte */
 			$$ = ast_new_affectation($1,$3);
 		}
 	;
@@ -194,7 +218,11 @@ operation:
 	|	'('expression')'
 		{
 			$$ = $2;
-		}		
+		}
+	|	'-' expression %prec UMOINS
+		{
+			$$ = ast_new_unop("-", $2);
+		}
 	;
 
 condition:
@@ -267,37 +295,92 @@ comparaison:
 
 %%
 
-//Message d'erreur perso
+dup_list* dup_alloc_list_new()
+{
+	dup_list* new = calloc(1,sizeof(dup_list));
+	new->dup = NULL;
+	new->next = NULL;
+	return new;
+}
+
+//En cas d'erreur il se peut que les ID récupèrer doivent être libèrés
+//On doit donc systématiquement les lister
+void dup_alloc_list_add(char* dup)
+{
+	if(dup_alloc_list == NULL)
+	{
+		dup_alloc_list = dup_alloc_list_new();
+		dup_alloc_list->dup = dup;
+		return;
+	}
+
+	dup_list* scan = dup_alloc_list;
+	dup_list* new = dup_alloc_list_new();
+	new->dup = dup;
+	while(scan->next != NULL)
+	{
+		scan = scan->next;
+	}
+	scan->next = new;
+}
+
+void dup_alloc_list_free()
+{
+	dup_list* scan = dup_alloc_list;
+	dup_list* tmp = scan;
+	while(scan != NULL)
+	{
+		scan = scan->next;
+		if(tmp->dup != NULL)
+		{
+			free(tmp->dup);
+		}
+		free(tmp);
+		tmp = scan;
+	}
+}
+
+//libère toutes les allocation sauf celles de yacc
+void cleanup()
+{
+	ast_free(root);
+	if(get_error_count() != 0)
+	{
+		//en cas d'erreur les noeuds de l'ast sont libérés ici
+		ast_free_ast_alloc();
+		dup_alloc_list_free();
+	}
+	ast_free_ast_alloc_list();
+	symtable_free(t);
+	code_free(c);
+}
+
+//Message d'erreur perso si erreur de syntaxe détectée par yacc
 void yyerror(char* c) {
-	fprintf(stderr, "%s on %s\n", c, yytext); 
-	return;
+	incr_error_count();
+	fprintf(stderr, "yacc erreur %d : %s on %s (ligne %d)\n", get_error_count(), c, yytext, yylineno); 
+	cleanup();
 }
 
 //Si on a un match alors on appel cette fonction
 //Affiche l'ast, la table des symboles et les quads
-//puis libère l'espace utilisé pour ces 3 choses
-void parsing_ok(ast* ast)
+void parsing_ok()
 {
 	printf("Match!\n");
 
 	//Affichage
 	printf("\n===== AST =====\n\n");
-	ast_print(ast, 0);
+	ast_print(root, 0);
 	printf("\n===== SYMBOLS =====\n\n");
-	astGencode(ast,t,c);
+	astGencode(root,t,c);
 	symtable_dump(t);
 	printf("\n===== QUADS =====\n\n");
 	code_dump(c);
-
-	//libération de la mémoire
-	ast_free(ast);
-	symtable_free(t);
-	code_free(c);
 }
 
 int main(int argc, char* argv[]) {
 	//Fichiers d'e/s
-	FILE *in, *out;
+	FILE *in = NULL, *out = NULL;
 
 	//On alloue un espace mémoire pour la table des symboles t
 	t = symtable_new();
