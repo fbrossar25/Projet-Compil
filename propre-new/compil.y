@@ -12,9 +12,11 @@
 		int yylex(void);
 	#endif
 
+	#define YYERROR_VERBOSE
+
 	#define MAX_MESSAGE_LENGTH 128
 
-	void yyerror(char *s);
+	void yyerror(const char *s);
 	void parsing_ok();
 	void yylex_destroy(void);
 
@@ -40,6 +42,8 @@
 
 	void dup_alloc_list_add(char* dup);
 %}
+
+%error-verbose
 
 %union {
 	int value;
@@ -368,9 +372,9 @@ void cleanup()
 }
 
 //Message d'erreur perso si erreur de syntaxe détectée par yacc
-void yyerror(char* c) {
+void yyerror(const char* s) {
 	incr_error_count();
-	fprintf(stderr, "yacc erreur %d : %s on %s (ligne %d)\n", get_error_count(), c, yytext, yylineno); 
+	fprintf(stderr, "yacc erreur %d : %s (ligne %d)\n", get_error_count(), s, yylineno); 
 	cleanup();
 }
 
