@@ -9,8 +9,10 @@
 
 typedef char name_t[8];
 
+typedef enum symbol_kind { NAME, CONSTANT } symbol_kind;
+
 typedef struct symbol {
-  enum symbol_kind { NAME, CONSTANT } kind;
+  symbol_kind kind;
     union {
         name_t name;
         long int value;
@@ -39,8 +41,10 @@ void symtable_free(symtable* t);
 
 /* QUADRUPLETS ET CODE */
 
+typedef enum quad_kind { BOP_PLUS, BOP_MINUS, BOP_MULT, BOP_DIV, UOP_MINUS, COPY, CALL_PRINT } quad_kind;
+
 typedef struct quad {
-  enum quad_kind { BOP_PLUS, BOP_MINUS, BOP_MULT, BOP_DIV, UOP_MINUS, COPY, CALL_PRINT } kind;
+  quad_kind kind;
   symbol* sym1;
   symbol* sym2;
   symbol* sym3;
@@ -54,7 +58,7 @@ typedef struct code {
 
 code* code_new();
 
-void gencode(code* c, enum quad_kind k, symbol* s1, symbol* s2, symbol* s3);
+void gencode(code* c, quad_kind k, symbol* s1, symbol* s2, symbol* s3);
 
 symbol* newtemp(struct symtable * t);
 

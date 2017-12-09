@@ -7,12 +7,14 @@
 
 #include "lib.h"
 
+typedef enum ast_type {
+	BIN_OP, UN_OP, FOR_STMT,
+	IF_STMT, FCT, AFFECT, IDENTIFIER,
+	INT, ACTION, WHILE_STMT
+} ast_type;
+
 typedef struct ast {
-    enum ast_type {
-			BIN_OP, UN_OP, FOR_STMT,
-			IF_STMT, FCT, AFFECT, IDENTIFIER,
-			INT, ACTION, WHILE_STMT
-	} type;
+    ast_type type;
     union{
 		struct { //opérateur unaire ( le - unaire, goto)
 			char* op;
