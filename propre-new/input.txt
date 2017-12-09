@@ -1,4 +1,10 @@
 int a = 1+1;
 int b = 5;
 int c = a * b;
+//int e = -d //provoque bien une erreur
+/*
+test commentaire
+sur plusieurs lignes
+*/
 int e = -d;
+int f = 0 / 0;

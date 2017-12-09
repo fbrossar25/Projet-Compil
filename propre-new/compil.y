@@ -239,6 +239,10 @@ operation:
 		}
 	|	expression '/' expression
 		{
+			if($3->type == INT && $3->u.nombre == 0)
+			{
+				error("Division par 0 !", yylineno);
+			}
 			$$ = ast_new_binop("/",$1,$3);
 		}	
 	|	'('expression')'

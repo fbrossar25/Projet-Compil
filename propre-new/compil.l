@@ -10,6 +10,7 @@
 %%
 
 \n 									{  }
+"//".*								{ }
 "int"								{ return TYPE; }
 "main"								{ return MAIN;}
 "return" 							{ return RETURN;}
