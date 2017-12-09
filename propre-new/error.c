@@ -6,8 +6,7 @@ static int error_count = 0;
 void error(char* e, int line)
 {
 	error_count++;
-	fprintf(stderr, "erreur %d : %s (ligne %d)",error_count, e, line);
-	return;
+	fprintf(stderr, "erreur %d : %s (ligne %d)\n",error_count, e, line);
 }
 
 int get_error_count()
