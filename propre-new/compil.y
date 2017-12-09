@@ -1,10 +1,12 @@
 %{
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <string.h>
 
 	#include "ast.h"
 	#include "lib.h"
 	#include "error.h"
+	#include "mips.h"
 
 	//pour éviter un warning avec yylex
 	#if YYBISON
@@ -13,8 +15,6 @@
 	#endif
 
 	#define YYERROR_VERBOSE
-
-	#define MAX_MESSAGE_LENGTH 128
 
 	void yyerror(const char *s);
 	void parsing_ok();
@@ -27,6 +27,7 @@
 	extern int yylineno;
 
 	extern FILE *yyin, *yyout;
+	char* mips_out;
 
 	symtable* t = NULL;
 	code* c = NULL;
@@ -99,6 +100,7 @@ axiom:
 			if(get_error_count() == 0)
 			{
 				parsing_ok();
+				quad_to_MIPS(t,c,mips_out);
 			}
 			cleanup();
 			return 0;
@@ -109,6 +111,7 @@ axiom:
 			if(get_error_count() == 0)
 			{
 				parsing_ok();
+				quad_to_MIPS(t,c,mips_out);
 			}
 			cleanup();
 			return 0;
@@ -200,6 +203,12 @@ valeur:
 		}
 	|	ID
 		{
+			if(symtable_get(t, $1) == NULL)
+			{
+				char message[MAX_MESSAGE_LENGTH];
+				snprintf(message, MAX_MESSAGE_LENGTH, "Symbole '%s' non reconnus", $1);
+				error(message, yylineno);
+			}
 			$$ = ast_new_id($1);
 		}
 	;
@@ -450,10 +459,16 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	
-	//si un fichier de sortie
+	//si un fichier de sortie (pour MIPS)
 	if(argc >= 3)
 	{
-		out = fopen(argv[2], "w+");
+		mips_out = argv[2];
+	}
+
+	//si un fichier de sortie (pour printf)
+	if(argc >= 4)
+	{
+		out = fopen(argv[3], "w+");
 		if(out != NULL)  //si fichier de sortie ouvert
 		{
 			if(yyout != stdout && yyout != NULL)
@@ -465,7 +480,7 @@ int main(int argc, char* argv[]) {
 		else
 		{
 			//fichier de sortie inexistant ou impossible à ouvrir
-			fprintf(stderr,"Error writing int file '%s'", argv[2]);
+			fprintf(stderr,"Error writing in file '%s'", argv[3]);
 			return EXIT_FAILURE;
 		}
 	}

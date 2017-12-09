@@ -5,6 +5,8 @@
 #include "stdio.h"
 #include "string.h"
 
+#define MAX_MESSAGE_LENGTH 128
+
 void error(char* e, int line);
 
 int get_error_count();

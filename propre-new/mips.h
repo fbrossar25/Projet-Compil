@@ -9,6 +9,6 @@
 #include "symbol.h"
 #include "error.h"
 
-void quad_to_MIPS(symtable* t, code* c, FILE* out);
+void quad_to_MIPS(symtable* t, code* c, char* out_file);
 
 #endif

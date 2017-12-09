@@ -16,6 +16,8 @@ GENERATED = lex.yy.c y.tab.c y.tab.h
 #fichier d'entrée pour make test
 INPUT = input.txt
 
+MIPS = mips.s
+
 VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 
 #fichiers sources
@@ -43,13 +45,13 @@ clean:
 	rm -f *.o $(GENERATED)
 
 test: all
-	./$(EXEC) $(INPUT)
+	./$(EXEC) $(INPUT) $(MIPS)
 
 valgrind: all
 	valgrind $(VALGRIND) ./$(EXEC)
 
 valgrind-test: all
-	valgrind $(VALGRIND) ./$(EXEC) $(INPUT)
+	valgrind $(VALGRIND) ./$(EXEC) $(INPUT) $(MIPS)
 
 vt : valgrind-test
 
