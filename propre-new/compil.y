@@ -32,6 +32,8 @@
 	code* c = NULL;
 	ast* root = NULL;
 
+	int syntax_error = 0;
+
 	typedef struct dup_list
 	{
 		char* dup;
@@ -339,6 +341,7 @@ void dup_alloc_list_add(char* dup)
 	scan->next = new;
 }
 
+//libère la liste et son contenus
 void dup_alloc_list_free()
 {
 	dup_list* scan = dup_alloc_list;
@@ -356,15 +359,32 @@ void dup_alloc_list_free()
 	}
 }
 
+//ne libère que la liste, pas son contenus
+void dup_alloc_list_free_list()
+{
+	dup_list* scan = dup_alloc_list;
+	dup_list* tmp = scan;
+	while(scan != NULL)
+	{
+		scan = scan->next;
+		free(tmp);
+		tmp = scan;
+	}
+}
+
 //libère toutes les allocation sauf celles de yacc
 void cleanup()
 {
 	ast_free(root);
-	if(get_error_count() != 0)
+	if(get_error_count() != 0 && syntax_error != 0)
 	{
 		//en cas d'erreur les noeuds de l'ast sont libérés ici
 		ast_free_ast_alloc();
 		dup_alloc_list_free();
+	}
+	else
+	{
+		dup_alloc_list_free_list();
 	}
 	ast_free_ast_alloc_list();
 	symtable_free(t);
@@ -374,6 +394,7 @@ void cleanup()
 //Message d'erreur perso si erreur de syntaxe détectée par yacc
 void yyerror(const char* s) {
 	incr_error_count();
+	syntax_error = 1;
 	fprintf(stderr, "yacc erreur %d : %s (ligne %d)\n", get_error_count(), s, yylineno); 
 	cleanup();
 }

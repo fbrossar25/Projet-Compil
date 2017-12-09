@@ -1,4 +1,5 @@
 int a = 1+1;
 int b = 5;
 int c = a * b;
-int e = -d
+int e = -d;
+int foo = bar;
