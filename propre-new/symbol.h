@@ -47,4 +47,6 @@ symbol* newtemp(symtable * t);
 
 void symbol_dump(symbol* s);
 
+void symbol_dump_file(symbol* s, FILE* out);
+
 #endif

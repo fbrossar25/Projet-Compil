@@ -1,10 +1,10 @@
 int a = 1+1;
 int b = 5;
 int c = a * b;
-//int e = -d //provoque bien une erreur
+//int e = -d //erreur de syntaxe
 /*
 test commentaire
 sur plusieurs lignes
 */
-int e = -d;
-int f = 0 / 0;
+//int e = -d; //erreur sémantique sur d
+//int f = 0 / 0; //division par 0

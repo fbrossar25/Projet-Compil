@@ -91,14 +91,31 @@ void symbol_dump(symbol* s)
         return;
     }
     switch(s->kind)
-        {
-            case CONSTANT:
-                printf("%d",s->u.value);
-                break;
-            case NAME:
-                printf("%s",s->u.name);
-                break;
-        }
+    {
+        case CONSTANT:
+            printf("%d",s->u.value);
+            break;
+        case NAME:
+            printf("%s",s->u.name);
+            break;
+    }
+}
+
+void symbol_dump_file(symbol* s, FILE* out)
+{
+    if(s == NULL)
+    {
+        return;
+    }
+    switch(s->kind)
+    {
+        case CONSTANT:
+            fprintf(out,"%d",s->u.value);
+            break;
+        case NAME:
+            fprintf(out,"%s",s->u.name);
+            break;
+    }
 }
 
 static void symbol_free(symbol* s)
