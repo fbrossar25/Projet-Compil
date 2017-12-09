@@ -67,10 +67,11 @@
 %type <ast> incrementation
 %type <ast> valeur
 %type <ast> operation
+%type <ast> print_fct
 
 %token <string> ID
 %token TYPE
-%token MAIN
+%token MAIN PRINTF PRINTI
 %token RETURN
 %token <value> ENTIER
 %token IF
@@ -79,12 +80,10 @@
 %token DO
 %token FOR
 %token COMMENTAIRE
-%token INCR
-%token DECR
-%token EGAL
-%token INEGAL
-%token SUPEG
-%token INFEG
+%token INCR DECR SHORT_INCR SHORT_DECR
+%token EGAL INEGAL SUPEG INFEG
+%token TRUE FALSE
+%token <string> STRING
 
 //%right '=' //préséance inutile d'après yacc
 %left '+' '-'
@@ -133,7 +132,7 @@ fonction:
 			$$ = ast_new_fonction("main", NULL, $6);
 		}
 	;
-
+		
 
 retour:
 	 	RETURN ENTIER';'
@@ -154,12 +153,25 @@ action:
 	;
 
 instruction:
-		declaration	';'			{$$ = $1;}
-	| 	operation	';'			{$$ = $1;}
-	|	condition				{$$ = $1;}
-	|	boucle					{$$ = $1;}
-	|	affectation	';'			{$$ = $1;}
-	|	incrementation	';'		{$$ = $1;}
+		declaration	';'			{ $$ = $1; }
+	| 	operation	';'			{ $$ = $1; }
+	|	condition				{ $$ = $1; }
+	|	boucle					{ $$ = $1; }
+	|	affectation	';'			{ $$ = $1; }
+	|	incrementation	';'		{ $$ = $1; }
+	|	print_fct ';'			{ $$ = $1; }
+	;
+
+
+print_fct:
+		PRINTF '(' STRING ')'
+		{
+			ast_new_call("printf", ast_new_id($3));
+		}
+	|	PRINTI '(' expression ')'
+		{
+			ast_new_call("printi", $3);
+		}
 	;
 
 declaration:
@@ -294,6 +306,14 @@ incrementation:
 		{
 			$$ = ast_new_unop("--",ast_new_id($1));
 		}
+	|	ID SHORT_INCR expression
+		{
+			$$ = ast_new_binop("+=", ast_new_id($1), $3);
+		}
+	|	ID SHORT_DECR expression
+		{
+			$$ = ast_new_binop("-=", ast_new_id($1), $3);
+		}
 	;
 
 comparaison:
@@ -320,6 +340,14 @@ comparaison:
 	|	expression '<' expression
 		{
 			$$ = ast_new_binop("<",$1,$3);
+		}
+	|	TRUE
+		{
+			//TODO
+		}
+	|	FALSE
+		{
+			//TODO
 		}
 	;
 

@@ -17,23 +17,31 @@ static symbol* symbol_new()
 
 symbol* symtable_const(symtable* t, int v)
 {
-    symbol* new = symbol_new();
-    new->kind = CONSTANT;
-    new->u.value = v;
     if(t->first == NULL) //si table vide
     {
+        symbol* new = symbol_new();
+        new->kind = CONSTANT;
+        new->u.value = v;
         t->first = new;
+        return new;
     }
-    else //sinon on met new en fin de liste
+    else //sinon on met new en fin de liste sauf s'il existe deja
     {
         symbol* scan = t->first;
         while(scan->next != NULL)
         {
+            if(scan->kind == CONSTANT && scan->u.value == v)
+            {
+                return scan;
+            }
             scan = scan->next;
         }
+        symbol* new = symbol_new();
+        new->kind = CONSTANT;
+        new->u.value = v;
         scan->next = new;
+        return new;
     }
-    return new;
 }
 
 symbol* symtable_get(symtable* t, const char * s)

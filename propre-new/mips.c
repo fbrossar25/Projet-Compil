@@ -47,6 +47,66 @@ void mips_exit(FILE* out)
     mips_syscall(10, out);
 }
 
+//écrit un commentaire pour améliorer la lisibilité du code MIPS
+void mips_comment(quad_kind k, quad* q, FILE* out)
+{
+    symbol* res = q->sym1;
+    symbol* arg1 = q->sym2;
+    symbol* arg2 = q->sym3;
+    switch(k)
+    {
+        case BOP_PLUS:
+            fprintf(out, "#BOP_PLUS ");
+            symbol_dump_file(res, out);
+            fprintf(out, " <- ");
+            symbol_dump_file(arg1, out);
+            fprintf(out, " + ");
+            symbol_dump_file(arg2, out);
+            break;
+        case BOP_MINUS:
+            fprintf(out, "#BOP_MINUS ");
+            symbol_dump_file(res, out);
+            fprintf(out, " <- ");
+            symbol_dump_file(arg1, out);
+            fprintf(out, " - ");
+            symbol_dump_file(arg2, out);
+            break;
+        case BOP_MULT:
+            fprintf(out, "#BOP_MULT ");
+            symbol_dump_file(res, out);
+            fprintf(out, " <- ");
+            symbol_dump_file(arg1, out);
+            fprintf(out, " * ");
+            symbol_dump_file(arg2, out);
+            break;
+        case BOP_DIV:
+            fprintf(out, "#BOP_DIV ");
+            symbol_dump_file(res, out);
+            fprintf(out, " <- ");
+            symbol_dump_file(arg1, out);
+            fprintf(out, " / ");
+            symbol_dump_file(arg2, out);
+            break;
+        case UOP_MINUS:
+            fprintf(out, "#UOP_MINUS ");
+            symbol_dump_file(res, out);
+            fprintf(out, " <- - ");
+            symbol_dump_file(arg1, out);
+            break;
+        case COPY:
+            fprintf(out, "#COPY ");
+            symbol_dump_file(res, out);
+            fprintf(out, " <- ");
+            symbol_dump_file(arg1, out);
+            break;
+        case CALL_PRINT:
+            fprintf(out, "#CALL_PRINT print ");
+            symbol_dump_file(res, out);
+            break;
+    }
+    fprintf(out, "\n");
+}
+
 
 //Fonction générant du MIPS
 
@@ -97,46 +157,46 @@ void quad_to_MIPS(symtable* t, code* c, char* out_file)
         switch(q->kind)
         {
             case BOP_PLUS:
-                fprintf(out, "#BOP_PLUS\n");
+                mips_comment(BOP_PLUS, q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("add", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case BOP_MINUS:
-                fprintf(out, "#BOP_MINUS\n");
+                mips_comment(BOP_MINUS, q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("sub", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case BOP_MULT:
-                fprintf(out, "#BOP_MULT\n");
+                mips_comment(BOP_MULT, q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("mul", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case BOP_DIV:
-                fprintf(out, "#BOP_DIV\n");
+                mips_comment(BOP_DIV, q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("div", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case UOP_MINUS:
-                fprintf(out, "#UOP_MINUS\n");
+                mips_comment(UOP_MINUS, q, out);
                 load_symbol(q->sym2, "t0", out);
                 mips_2reg_op("neg", "t0", "t0", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case COPY:
-                fprintf(out, "#COPY\n");
+                mips_comment(COPY, q, out);
                 load_symbol(q->sym2, "t0", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case CALL_PRINT:
-                fprintf(out, "#CALL_PRINT\n");
+                mips_comment(CALL_PRINT, q, out);
                 load_symbol(q->sym1, "a0", out);
                 mips_syscall(1, out);
                 break;

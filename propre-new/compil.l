@@ -9,11 +9,19 @@
 %}
 %%
 
-\n 									{  }
-"//".*								{ }
+\n 									{ }
+"//".*								{ /* return COMMENTAIRE; */ }
+"\"".*"\""							{ 
+										char* dup = strdup(yytext);
+										yylval.string = dup; 
+										dup_alloc_list_add(dup);
+										return STRING;
+									}
 "int"								{ return TYPE; }
-"main"								{ return MAIN;}
-"return" 							{ return RETURN;}
+"main"								{ return MAIN; }
+"printf"							{ return PRINTF; }
+"printi"							{ return PRINTI; }
+"return" 							{ return RETURN; }
 "if" 								{ return IF; }
 "else" 								{ return ELSE; }
 "while"	 							{ return WHILE; }
@@ -21,10 +29,14 @@
 "do"								{ return DO; }
 "++"								{ return INCR; }
 "--"								{ return DECR; }
+"+="								{ return SHORT_INCR; }
+"-="								{ return SHORT_DECR; }
 "=="								{ return EGAL; }
 "!="								{ return INEGAL; }
 ">="								{ return SUPEG; }
 "<="								{ return INFEG; }
+"true"								{ return TRUE; }
+"false"								{ return FALSE; }
 [()]         						{ return yytext[0]; }
 [{}]         						{ return yytext[0]; }
 [[]]         						{ return yytext[0]; }

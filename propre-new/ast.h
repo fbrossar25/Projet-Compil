@@ -9,10 +9,11 @@
 #include "symbol.h"
 #include "error.h"
 
+//pour le token STRING on réutilise le champ id (type IDENTIFIER)
 typedef enum ast_type {
 	BIN_OP, UN_OP, FOR_STMT,
 	IF_STMT, FCT, AFFECT, IDENTIFIER,
-	INT, ACTION, WHILE_STMT, UNDEFINED
+	INT, ACTION, WHILE_STMT, UNDEFINED, CALL
 } ast_type;
 
 typedef struct ast {
@@ -52,6 +53,10 @@ typedef struct ast {
 			struct ast* instruction; //instruction en cours
 			struct ast* action; //instruction suivante
 		}action;
+		struct{
+			char* name; //nom de la fonction
+			struct ast* arg; //argument de la fonction
+		}call;
 		char* id; //identifieur
 		int nombre; //entier
     }u;
@@ -73,6 +78,7 @@ ast* ast_new_for(ast* min, ast* max, ast* incr, ast* action);
 ast* ast_new_unop(char* op, ast* fils);
 ast* ast_new_binop(char* op, ast* left, ast* right);
 ast* ast_new_action(ast* instruction, ast* action);
+ast* ast_new_call(char* name, ast* arg);
 struct symbol* astGencode(ast* src, struct symtable* t, struct code* c);
 void ast_print(ast* ast, int tab);
 void ast_free(ast* ast);

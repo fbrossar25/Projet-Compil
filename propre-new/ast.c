@@ -92,6 +92,7 @@ void ast_free_affect(ast* ast);
 void ast_free_identifier(ast* ast);
 void ast_free_int(ast* ast);
 void ast_free_action(ast* ast);
+void ast_free_call(ast* ast);
 
 void ast_print_binop(ast* ast, int tab);
 void ast_print_unop(ast* ast, int tab);
@@ -102,6 +103,7 @@ void ast_print_affect(ast* ast, int tab);
 void ast_print_identifier(ast* ast, int tab);
 void ast_print_int(ast* ast, int tab);
 void ast_print_action(ast* ast, int tab);
+void ast_print_call(ast* ast, int tab);
 
 void print_indent(int indent)
 {
@@ -111,6 +113,7 @@ void print_indent(int indent)
 	}
 }
 
+//alloue un nouvel ast avec type = UNDEFINED
 ast* ast_alloc()
 {
 	ast* new = calloc(1, sizeof(ast)); // calloc initialise tout à 0
@@ -151,6 +154,18 @@ ast* ast_new_fonction(char* name, ast* action, ast* retour)
 	new->u.fct.name = strdup(name);
 	new->u.fct.action = action;
 	new->u.fct.retour = retour;
+	return new;
+}
+
+ast* ast_new_call(char* name, ast* arg)
+{
+	ast* new = ast_alloc();
+	new->type = CALL;
+	new->u.call.name = name;
+	new->u.call.arg = arg;
+	printf("====== ast new call =====\n");
+	ast_print_call(new,0);
+	printf("=========================\n");
 	return new;
 }
 
@@ -231,12 +246,40 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				{
 					gencode(c, BOP_DIV, s, astGencode(left,t,c), astGencode(right,t,c));
 				}
+				else if(strcmp(src->u.binop.op, "+=") == 0)
+				{
+					symbol* left_symbol = astGencode(left,t,c);
+					gencode(c, BOP_PLUS, s, left_symbol, astGencode(right,t,c));
+					gencode(c, COPY, left_symbol, s, NULL);
+					s = left_symbol;
+				}
+				else if(strcmp(src->u.binop.op, "-=") == 0)
+				{
+					symbol* left_symbol = astGencode(left,t,c);
+					gencode(c, BOP_MINUS, s, left_symbol, astGencode(right,t,c));
+					gencode(c, COPY, left_symbol, s, NULL);
+					s = left_symbol;
+				}
 				break;
 			case UN_OP:
+				s = newtemp(t);
 				if(strcmp(src->u.unop.op, "-") == 0)
 				{
-					s = newtemp(t);
 					gencode(c, UOP_MINUS, s, astGencode(src->u.binop.right, t, c), NULL);
+				}
+				else if(strcmp(src->u.unop.op, "++") == 0)
+				{
+					symbol* fils = astGencode(src->u.unop.fils, t, c);
+					gencode(c, BOP_PLUS, s, fils, symtable_const(t,1));
+					gencode(c, COPY, fils, s, NULL);
+					s = fils;
+				}
+				else if(strcmp(src->u.unop.op, "--") == 0)
+				{
+					symbol* fils = astGencode(src->u.unop.fils, t, c);
+					gencode(c, BOP_MINUS, s, fils, symtable_const(t,1));
+					gencode(c, COPY, fils, s, NULL);
+					s = fils;
 				}
 				break;
 			case FOR_STMT:
@@ -287,31 +330,34 @@ void ast_free(ast *ast)
 	{
 		case BIN_OP:
 			ast_free_binop(ast);
-		break;
+			break;
 		case UN_OP:
 			ast_free_unop(ast);
-		break;
+			break;
 		case FOR_STMT:
 			ast_free_for(ast);
-		break;
+			break;
 		case IF_STMT:
 			ast_free_if(ast);
-		break;
+			break;
 		case FCT:
 			ast_free_fct(ast);
-		break;
+			break;
 		case AFFECT:
 			ast_free_affect(ast);
-		break;
+			break;
 		case IDENTIFIER:
 			ast_free_identifier(ast);
-		break;
+			break;
 		case INT:
 			ast_free_int(ast);
-		break;
+			break;
 		case ACTION:
 			ast_free_action(ast);
-		break;
+			break;
+		case CALL:
+			ast_free_call(ast);
+			break;
 		default:
 			fprintf(stderr, "ast non reconnus\n");
 			return;
@@ -336,31 +382,34 @@ void ast_print(ast* ast, int tab)
 	{
 		case BIN_OP:
 			ast_print_binop(ast, tab);
-		break;
+			break;
 		case UN_OP:
 			ast_print_unop(ast, tab);
-		break;
+			break;
 		case FOR_STMT:
 			ast_print_for(ast, tab);
-		break;
+			break;
 		case IF_STMT:
 			ast_print_if(ast, tab);
-		break;
+			break;
 		case FCT:
 			ast_print_fct(ast, tab);
-		break;
+			break;
 		case AFFECT:
 			ast_print_affect(ast, tab);
-		break;
+			break;
 		case IDENTIFIER:
 			ast_print_identifier(ast, tab);
-		break;
+			break;
 		case INT:
 			ast_print_int(ast, tab);
-		break;
+			break;
 		case ACTION:
 			ast_print_action(ast, tab);
-		break;
+			break;
+		case CALL:
+			ast_print_call(ast,tab);
+			break;
 		default:
 			fprintf(stderr, "ast non reconnus\n");
 	}
@@ -427,13 +476,18 @@ void ast_free_int(ast* ast)
 	// qui libère au passage le champ nombre
 }
 
-
 void ast_free_action(ast* ast)
 {
 	ast_free(ast->u.action.instruction);
 	ast_free(ast->u.action.action);
 }
 
+void ast_free_call(ast* ast)
+{
+	free(ast->u.call.name);
+	ast->u.call.name = NULL;
+	ast_free(ast->u.call.arg);
+}
 
 
 void ast_print_binop(ast* ast, int tab)
@@ -504,9 +558,14 @@ void ast_print_int(ast* ast, int tab)
 	printf("%d\n", ast->u.nombre);
 }
 
-
 void ast_print_action(ast* ast, int tab)
 {
 	ast_print(ast->u.action.instruction, tab);
 	ast_print(ast->u.action.action, tab);
+}
+
+void ast_print_call(ast* ast, int tab)
+{
+	printf("call %s\n", ast->u.call.name);
+	ast_print(ast->u.call.arg, tab+1);
 }
