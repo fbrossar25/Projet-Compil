@@ -36,10 +36,9 @@ ast* ast_alloc()
 
 ast* ast_new_id(char* id)
 {
-	printf("@ast_new_id(%s)\n",id);
 	ast* new = ast_alloc();
 	new->type = IDENTIFIER;
-	new->u.id = strdup(id);
+	new->u.id = id;
 	return new;
 }
 

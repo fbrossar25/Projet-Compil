@@ -31,7 +31,7 @@
 ">"									{ return yytext[0]; }
 "<"									{ return yytext[0]; }
 "="									{ return yytext[0]; }
-[a-zA-Z_][0-9a-zA-Z_]* 			 				{ yylval.string = yytext; return ID; }
+[a-zA-Z_][0-9a-zA-Z_]* 			 				{ yylval.string = strdup(yytext); return ID; }
 [0-9]+ 									{ yylval.value = atoi(yytext); return ENTIER; }
 "/*"([^*]*[*]+[*]*[^*/])*[^*]*[*]+"/" 					{ /*return COMMENTAIRE ;*/ }
 [ \t\v\r\f] 								{/* Ignore */}

@@ -63,7 +63,7 @@
 %token SUPEG
 %token INFEG
 
-%right '='
+//%right '=' //préséance inutile d'après yacc
 %left '+' '-'
 %left '*' '/'
 
@@ -82,7 +82,7 @@ axiom:
 		}
 	|	%empty
 		{
-			printf("Match !\n");
+			printf("Match ! (fichier vide)\n");
 			return 0;
 		}
 	;
@@ -129,14 +129,12 @@ instruction:
 declaration:
 		TYPE ID
 		{
-			printf("new id : %s\n", $2);
 			symtable_put(t, $2);
 			$$ = ast_new_id($2);
 		}
 	|	TYPE affectation
 		{
 			ast* ast_id = $2->u.affect.id; //noeud id venant d'un noeud affect
-			printf("new id : %s\n", ast_id->u.id); //champ id du noeud id
 			symtable_put(t, ast_id->u.id);
 			$$ = $2;
 		}
@@ -149,6 +147,7 @@ affectation:
 		}
 	|	ID '=' operation
 		{
+			/* $1 donne pas l'id mais le texte */
 			$$ = ast_new_affectation($1,$3);
 		}
 	;
@@ -212,11 +211,11 @@ condition:
 boucle:
 		WHILE'('comparaison')' '{'action'}'
 		{
-			//j'ai la flemme
+			//TODO
 		}
 	|	DO '{'action'}' WHILE '('comparaison')'';'
 		{
-			//j'ai la flemme
+			//TODO
 		}
 	|	FOR'('TYPE affectation';' comparaison';' incrementation')' '{'action'}'
 		{
@@ -268,15 +267,20 @@ comparaison:
 
 %%
 
+//Message d'erreur perso
 void yyerror(char* c) {
 	fprintf(stderr, "%s on %s\n", c, yytext); 
 	return;
 }
 
+//Si on a un match alors on appel cette fonction
+//Affiche l'ast, la table des symboles et les quads
+//puis libère l'espace utilisé pour ces 3 choses
 void parsing_ok(ast* ast)
 {
 	printf("Match!\n");
 
+	//Affichage
 	printf("\n===== AST =====\n\n");
 	ast_print(ast, 0);
 	printf("\n===== SYMBOLS =====\n\n");
@@ -284,24 +288,33 @@ void parsing_ok(ast* ast)
 	symtable_dump(t);
 	printf("\n===== QUADS =====\n\n");
 	code_dump(c);
+
+	//libération de la mémoire
 	ast_free(ast);
 	symtable_free(t);
 	code_free(c);
 }
 
 int main(int argc, char* argv[]) {
+	//Fichiers d'e/s
 	FILE *in, *out;
+
+	//On alloue un espace mémoire pour la table des symboles t
 	t = symtable_new();
-	c =code_new();
+	//et la liste de quad c
+	c = code_new();
+
+	//si aucun fichier d'entrée on lit stdin
 	if(argc <= 1)
 	{
 		printf("Entrez une expression :\n");
 	}
 	
+	//si un fichier d'entrée
 	if(argc >= 2)
 	{
 		in = fopen(argv[1], "r");
-		if(in != NULL)
+		if(in != NULL) //si fichier d'entrée ouvert
 		{
 			if(yyin != stdin && yyin != NULL)
 			{
@@ -311,15 +324,17 @@ int main(int argc, char* argv[]) {
 		}
 		else
 		{
+			//fichier d'entrée inexistant ou impossible à ouvrir
 			fprintf(stderr,"Error reading file '%s'", argv[1]);
 			return EXIT_FAILURE;
 		}
 	}
 	
+	//si un fichier de sortie
 	if(argc >= 3)
 	{
 		out = fopen(argv[2], "w+");
-		if(out != NULL)
+		if(out != NULL)  //si fichier de sortie ouvert
 		{
 			if(yyout != stdout && yyout != NULL)
 			{
@@ -329,6 +344,7 @@ int main(int argc, char* argv[]) {
 		}
 		else
 		{
+			//fichier de sortie inexistant ou impossible à ouvrir
 			fprintf(stderr,"Error writing int file '%s'", argv[2]);
 			return EXIT_FAILURE;
 		}
@@ -336,17 +352,19 @@ int main(int argc, char* argv[]) {
 
 
 	int code = yyparse();
+
+	//On libère la mémoire utilisé par lex et yacc
 	yylex_destroy();
 
-	if(in != NULL && in != stdin)
+	//On prend soin de fermer les fichier potentiellement ouverts
+
+	if(in != NULL && in != stdin) //attention à ne pas fermer stdin
 	{
-		printf("closing in\n");
 		fclose(in);
 	}
 
-	if(out != NULL && out != stdout)
+	if(out != NULL && out != stdout) //attention à ne pas fermer stdout
 	{
-		printf("closing out\n");
 		fclose(out);
 	}
 

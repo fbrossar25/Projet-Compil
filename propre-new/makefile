@@ -8,7 +8,7 @@ FLEX = flex #-d
 
 #flages de compilation
 LDFLAGS = -ly -ll -lfl
-CFLAGS = -Wall -std=gnu99 -g
+CFLAGS = -Wall -std=gnu99 -g -Wno-unused-function
 
 #fichier générés par flex et yacc (sauf y.output)
 GENERATED = lex.yy.c y.tab.c y.tab.h
