@@ -12,6 +12,7 @@ c++;
 c--;
 c += 1;
 c-=1;
+
 printf("Hello world !");
 printi(42);
 printi(c);

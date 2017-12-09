@@ -166,11 +166,11 @@ instruction:
 print_fct:
 		PRINTF '(' STRING ')'
 		{
-			ast_new_call("printf", ast_new_id($3));
+			$$ = ast_new_call("printf", ast_new_id($3));
 		}
 	|	PRINTI '(' expression ')'
 		{
-			ast_new_call("printi", $3);
+			$$ = ast_new_call("printi", $3);
 		}
 	;
 

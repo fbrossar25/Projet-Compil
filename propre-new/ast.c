@@ -163,9 +163,6 @@ ast* ast_new_call(char* name, ast* arg)
 	new->type = CALL;
 	new->u.call.name = name;
 	new->u.call.arg = arg;
-	printf("====== ast new call =====\n");
-	ast_print_call(new,0);
-	printf("=========================\n");
 	return new;
 }
 
@@ -289,28 +286,45 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				//TODO
 				break;
 			case FCT:
-				s = symtable_put(t,src->u.fct.name);
-				astGencode(src->u.fct.action ,t,c);
+				s = symtable_put(t, src->u.fct.name);
+				astGencode(src->u.fct.action,t, c);
 				break;
 			case AFFECT:
-				gencode(c,COPY,astGencode(src->u.affect.id,t,c),
-								astGencode(src->u.affect.expr,t,c),NULL);
+				gencode(c, COPY, astGencode(src->u.affect.id, t, c),
+								astGencode(src->u.affect.expr, t, c), NULL);
 				break;
 			case IDENTIFIER:
-				s = symtable_get(t,src->u.id);
+				s = symtable_get(t, src->u.id);
 				break;
 			case INT:
-				s = symtable_const(t,src->u.nombre);
+				s = symtable_const(t, src->u.nombre);
 				break;
 			case ACTION:
-				astGencode(src->u.action.instruction,t,c);
-				s = astGencode(src->u.action.action,t,c);
+				astGencode(src->u.action.instruction, t, c);
+				s = astGencode(src->u.action.action, t, c);
 				break;
 			case WHILE_STMT:
 				//TODO
 				break;
+			case CALL:
+				if( strcmp(src->u.call.name, "printf") == 0 ||
+					strcmp(src->u.call.name, "printi") == 0 )
+				{
+					s = astGencode(src->u.call.arg, t, c);
+					if(s == NULL)
+					{
+						fprintf(stderr, "@gencode Erreur fatale : l'argument de print est NULL\n");
+						exit(EXIT_FAILURE);
+					}
+					gencode(c, CALL_PRINT, s, NULL, NULL);
+				}
+				else
+				{
+					fprintf(stderr,"@gencode Erreur : la gestion des fonction définie par l'utilisateur n'est pas encore implémentée\n");
+				}
+				break;
 			default:
-				fprintf(stderr, "Erreur : type ast non renseigné\n");
+				fprintf(stderr, "@gencode Erreur : type ast non renseigné\n");
 		}
 	}
 	return s ;
