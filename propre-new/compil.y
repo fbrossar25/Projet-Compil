@@ -334,6 +334,7 @@ void dup_alloc_list_free()
 		if(tmp->dup != NULL)
 		{
 			free(tmp->dup);
+			tmp->dup = NULL;
 		}
 		free(tmp);
 		tmp = scan;

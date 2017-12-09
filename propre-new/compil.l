@@ -36,8 +36,9 @@
 "<"									{ return yytext[0]; }
 "="									{ return yytext[0]; }
 [a-zA-Z_][0-9a-zA-Z_]* 			 	{
-										yylval.string = strdup(yytext); 
-										dup_alloc_list_add(yytext);
+										char* dup = strdup(yytext);
+										yylval.string = dup; 
+										dup_alloc_list_add(dup);
 										return ID;
 									}
 [0-9]+ 								{ yylval.value = atoi(yytext); return ENTIER; }

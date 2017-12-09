@@ -42,24 +42,24 @@ void ast_free_ast_alloc()
 			ast* ast = scan->node;
 			if(get_error_count() != 0)
 			{
+				//on ne libère que les opérateurs car
+				//les id sont deja listé dans
+				//dup_alloc_list du fichier YACC
 				switch(ast->type)
 				{
 					case UN_OP:
 						free(ast->u.unop.op);
+						ast->u.unop.op = NULL;
 						break;
 					case BIN_OP:
 						free(ast->u.binop.op);
-						break;
-					case FCT:
-						free(ast->u.fct.name);
-						break;
-					case IDENTIFIER:
-						free(ast->u.id);
+						ast->u.binop.op = NULL;
 						break;
 					default:
 						; //rien mais erreur si vide
 				}
 				free(ast);
+				ast = NULL;
 			}
 			else
 			{
@@ -366,11 +366,6 @@ void ast_print(ast* ast, int tab)
 	}
 }
 
-
-
-
-
-
 //=====================================================================
 //Fonctions utilitaires pour allèger les autres fonctions
 
@@ -378,6 +373,7 @@ void ast_print(ast* ast, int tab)
 void ast_free_binop(ast* ast)
 {
 	free(ast->u.binop.op);
+	ast->u.binop.op = NULL;
 	ast_free(ast->u.binop.left);
 	ast_free(ast->u.binop.right);
 }
@@ -385,12 +381,14 @@ void ast_free_binop(ast* ast)
 void ast_free_unop(ast* ast)
 {
 	free(ast->u.unop.op);
+	ast->u.unop.op = NULL;
 	ast_free(ast->u.unop.fils);
 }
 
 void ast_free_fct(ast* ast)
 {
 	free(ast->u.fct.name);
+	ast->u.fct.name = NULL;
 	ast_free(ast->u.fct.action);
 	ast_free(ast->u.fct.retour);
 }
@@ -419,6 +417,7 @@ void ast_free_affect(ast* ast)
 void ast_free_identifier(ast* ast)
 {
 	free(ast->u.id);
+	ast->u.id = NULL;
 }
 
 void ast_free_int(ast* ast)
