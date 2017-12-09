@@ -1,5 +1,5 @@
 #include "lib.h"
-
+/*
 struct symtable * symtable_new()
 {
     struct symtable * t = malloc(sizeof(struct symtable));
@@ -79,6 +79,7 @@ void symtable_free(struct symtable * t)
     free(t->symbols);
     free(t);
 }
+*/
 
 struct code * code_new()
 {
@@ -113,7 +114,7 @@ void gencode(struct code* c, enum quad_kind k, struct symbol* s1, struct symbol*
     q->sym3 = s3;
     c->nextquad++;
 }
-
+/*
 struct symbol *newtemp(struct symtable * t)
 {
   struct symbol * s;
@@ -142,6 +143,7 @@ static void symbol_dump(struct symbol * s)
             break;
     }
 }
+*/
 
 static void quad_dump(struct quad * q)
 {

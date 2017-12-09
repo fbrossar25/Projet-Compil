@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "lib.h"
+#include "symbol.h"
 
 typedef enum ast_type {
 	BIN_OP, UN_OP, FOR_STMT,

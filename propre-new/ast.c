@@ -174,7 +174,7 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				if(s == NULL)
 					printf("NULL\n");
 				else if(s->kind == CONSTANT)
-					printf("constant %ld\n", s->u.value);
+					printf("constant %d\n", s->u.value);
 				else
 					printf("name '%s'\n", s->u.name);
 				break;
