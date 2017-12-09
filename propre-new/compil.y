@@ -12,6 +12,8 @@
 		int yylex(void);
 	#endif
 
+	#define MAX_MESSAGE_LENGTH 128
+
 	void yyerror(char *s);
 	void parsing_ok();
 	void yylex_destroy(void);
@@ -168,6 +170,15 @@ declaration:
 affectation:
 		ID '=' valeur
 		{
+			if($3->type == IDENTIFIER)
+			{
+				if(symtable_get(t, $3->u.id) == NULL)
+				{
+					char message[MAX_MESSAGE_LENGTH];
+					snprintf(message, MAX_MESSAGE_LENGTH, "Symbole '%s' non reconnus", $3->u.id);
+					error(message, yylineno);
+				}
+			}
 			$$ = ast_new_affectation($1,$3);
 		}
 	|	ID '=' operation
