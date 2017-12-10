@@ -22,7 +22,9 @@ VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 
 MARS = java -jar Mars4_5.jar
 
+#pour tar
 THIS_DIR = $(shell basename `pwd`)
+TAR_EXCLUDE = --exclude-ignore=.gitignore --exclude-vcs --exclude-vcs-ignores --exclude=.vscode
 
 #fichiers sources
 SRC = ast quads symbol error mips alloc
@@ -73,4 +75,4 @@ gdb: all
 	gdb $(EXEC)
 
 tar: mrproper
-	tar cvzf ../$(THIS_DIR).tar.gz ../$(THIS_DIR) 
+	tar cvzf ../$(THIS_DIR).tar.gz ../$(THIS_DIR) $(TAR_EXCLUDE)
