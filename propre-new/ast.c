@@ -499,7 +499,7 @@ void ast_free_action(ast* ast)
 
 void ast_free_call(ast* ast)
 {
-	free(ast->u.call.name);
+	//free(ast->u.call.name); //deja free dans yylex_destroy()
 	ast->u.call.name = NULL;
 	ast_free(ast->u.call.arg);
 }

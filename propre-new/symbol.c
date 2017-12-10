@@ -12,6 +12,9 @@ static symbol* symbol_new()
 {
     symbol* new = calloc(1, sizeof(symbol));
     new->next = NULL;
+    new->u.string.content = NULL;
+    new->u.string.string_id = NULL;
+    new->u.name = NULL;
     return new;
 }
 
@@ -83,7 +86,7 @@ symbol* symtable_put(symtable* t, const char * s)
     return new;
 }
 
-symbol* symtable_put_string(symtable* t, const char* string_content)
+symbol* symtable_put_string(symtable* t, char* string_content)
 {
     static size_t string_num = 0;
     symbol* new = symbol_new();
@@ -92,8 +95,8 @@ symbol* symtable_put_string(symtable* t, const char* string_content)
     char string_id[TEMP_NAME_LENGTH_LIMIT];
     snprintf(string_id, TEMP_NAME_LENGTH_LIMIT, "str%zu", string_num);
 
-    new->u.string.string_id = string_id;
-    new->u.string.content = strdup(string_content);
+    new->u.string.string_id = strdup(string_id);
+    new->u.string.content = string_content;
 
     if(t->first == NULL)
     {
@@ -199,7 +202,8 @@ void symtable_free(symtable* t)
 symbol* newtemp(symtable * t)
 {
     char temp_name[TEMP_NAME_LENGTH_LIMIT];
-    snprintf(temp_name, TEMP_NAME_LENGTH_LIMIT, "tmp%d", t->temp_num);
+    snprintf(temp_name, TEMP_NAME_LENGTH_LIMIT,
+                "tmp%d", t->temp_num);
     t->temp_num++;
     return symtable_put(t, temp_name);
 }

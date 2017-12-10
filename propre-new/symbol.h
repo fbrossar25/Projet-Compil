@@ -43,7 +43,7 @@ symbol* symtable_get(symtable* t, const char* s);
 
 symbol* symtable_put(symtable* t, const char* s);
 
-symbol* symtable_put_string(symtable* t, const char* s);
+symbol* symtable_put_string(symtable* t, char* s);
 
 void symtable_dump(symtable* t);
 
