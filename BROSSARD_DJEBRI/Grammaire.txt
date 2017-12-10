@@ -1,0 +1,96 @@
+
+axiom:
+	 	fonction
+	|	action
+	|	%empty
+	;
+
+fonction:
+	 	TYPE MAIN '(' ')' '{'action retour'}'
+	|	TYPE MAIN '(' ')' '{' retour '}'
+	;
+		
+
+retour:
+	 	RETURN ENTIER';'
+	;
+
+action:
+	 	instruction
+	|	instruction action
+	;
+
+instruction:
+		declaration	';'
+	| 	operation	';'
+	|	condition	
+	|	boucle
+	|	affectation	';'
+	|	incrementation	';'	
+	|	print_fct ';'
+	;
+
+
+print_fct:
+		PRINTF '(' STRING ')'
+	|	PRINTI '(' expression ')'
+	;
+
+declaration:
+		TYPE ID
+	|	TYPE affectation
+	;
+
+affectation:
+		ID '=' valeur
+	|	ID '=' operation
+	;
+
+valeur:
+		ENTIER
+	|	ID
+	;
+
+expression:
+		valeur
+	|	operation
+	;
+
+operation:
+		expression '+' expression
+	|	expression '-' expression	
+	|	expression '*' expression
+	|	expression '/' expression
+	|	'('expression')'
+	|	'-' expression %prec UMOINS
+	;
+
+condition:
+		IF'('comparaison')' '{'action'}'
+	|	IF'('comparaison')' '{'action'}' ELSE '{'action'}'
+	;
+
+boucle:
+		WHILE'('comparaison')' '{'action'}'
+	|	DO '{'action'}' WHILE '('comparaison')'';'
+	|	FOR'('TYPE affectation';' comparaison';' incrementation')' '{'action'}'
+	|  	FOR'('TYPE affectation';' comparaison';' operation')' '{'action'}'
+	;
+
+incrementation:
+		ID INCR
+	|	ID DECR
+	|	ID SHORT_INCR expression
+	|	ID SHORT_DECR expression
+	;
+
+comparaison:
+		expression EGAL expression
+	|	expression INEGAL expression
+	|	expression INFEG expression
+	|	expression SUPEG expression
+	|	expression '>' expression
+	|	expression '<' expression
+	|	TRUE
+	|	FALSE
+	;
