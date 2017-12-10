@@ -20,6 +20,8 @@ MIPS = mips.s
 
 VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 
+MARS = java -jar Mars4_5.jar
+
 #fichiers sources
 SRC = ast lib symbol error mips
 OBJ := $(addsuffix .o, $(SRC))
@@ -53,7 +55,12 @@ valgrind: all
 valgrind-test: all
 	valgrind $(VALGRIND) ./$(EXEC) $(INPUT) $(MIPS)
 
-vt : valgrind-test
+vt: valgrind-test
+
+mars:
+	$(MARS) mips.s
+
+mars-test: all mars
 
 mrproper: clean
 	rm -f $(EXEC) y.output

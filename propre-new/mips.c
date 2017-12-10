@@ -158,7 +158,7 @@ void quad_to_MIPS(symtable* t, code* c, char* out_file)
         }
         else if(scan->kind == STRING_SYMBOL)
         {
-            fprintf(out, "\t%s:\t.asciiz %s",
+            fprintf(out, "\t%s:\t.asciiz %s\n",
                             scan->u.string.string_id,
                             scan->u.string.content);
         }
