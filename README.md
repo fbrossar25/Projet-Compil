@@ -31,3 +31,13 @@ Sous linux :
 
 Le logiciel Mars :
 * http://courses.missouristate.edu/kenvollmar/mars/
+
+# Utilisation
+
+make
+
+./compil [[[C_INPUT] [MIPS_OUTPUT]] [YYOUT_REDIRECT]]
+
+* C_INPUT : fichier d'entrée C (stdin par défaut)
+* MIPS_OUTPUT : fichier de sortie MIPS (stdout par défaut)
+* YYOUT_REDIRECT : fichier de sortie pour redirigé les message du compilateur (stdout par défaut)
