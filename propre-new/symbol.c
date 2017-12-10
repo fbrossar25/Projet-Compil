@@ -53,6 +53,10 @@ symbol* symtable_get(symtable* t, const char * s)
         {
             return scan;
         }
+        else if(scan->kind == STRING_SYMBOL && strcmp(scan->u.string.string_id, s) == 0)
+        {
+            return scan;
+        }
         scan = scan->next;
     }
     return NULL;
@@ -79,6 +83,36 @@ symbol* symtable_put(symtable* t, const char * s)
     return new;
 }
 
+symbol* symtable_put_string(symtable* t, const char* string_content)
+{
+    static size_t string_num = 0;
+    symbol* new = symbol_new();
+    new->kind = STRING_SYMBOL;
+
+    char string_id[TEMP_NAME_LENGTH_LIMIT];
+    snprintf(string_id, TEMP_NAME_LENGTH_LIMIT, "str%zu", string_num);
+
+    new->u.string.string_id = string_id;
+    new->u.string.content = strdup(string_content);
+
+    if(t->first == NULL)
+    {
+        t->first = new;
+    }
+    else
+    {
+        symbol* scan = t->first;
+        while(scan->next != NULL)
+        {
+            scan = scan->next;
+        }
+        scan->next = new;
+    }
+
+    string_num++;
+    return new;
+}
+
 void symtable_dump(struct symtable * t)
 {
     symbol* scan = t->first;
@@ -101,10 +135,13 @@ void symbol_dump(symbol* s)
     switch(s->kind)
     {
         case CONSTANT:
-            printf("%d",s->u.value);
+            printf("%d", s->u.value);
             break;
         case NAME:
-            printf("%s",s->u.name);
+            printf("%s", s->u.name);
+            break;
+        case STRING_SYMBOL:
+            printf("%s : %s", s->u.string.string_id, s->u.string.content);
             break;
     }
 }
@@ -118,10 +155,13 @@ void symbol_dump_file(symbol* s, FILE* out)
     switch(s->kind)
     {
         case CONSTANT:
-            fprintf(out,"%d",s->u.value);
+            fprintf(out, "%d", s->u.value);
             break;
         case NAME:
-            fprintf(out,"%s",s->u.name);
+            fprintf(out, "%s", s->u.name);
+            break;
+        case STRING_SYMBOL:
+            fprintf(out, "%s", s->u.string.content);
             break;
     }
 }
@@ -135,6 +175,9 @@ static void symbol_free(symbol* s)
             break;
         case NAME:
             free(s->u.name);
+            break;
+        case STRING_SYMBOL:
+            free(s->u.string.content);
             break;
     }
     free(s);

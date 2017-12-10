@@ -12,7 +12,7 @@
 //10^(12 - 3) = 10^9 = 1 000 000 000
 #define TEMP_NAME_LENGTH_LIMIT 12
 
-typedef enum symbol_kind { NAME, CONSTANT } symbol_kind;
+typedef enum symbol_kind { NAME, CONSTANT, STRING_SYMBOL } symbol_kind;
 
 typedef struct symbol
 {
@@ -21,6 +21,10 @@ typedef struct symbol
     {
         char* name;
         int value;
+        struct string{
+            char* content;
+            char* string_id;
+        } string;
     } u;
     struct symbol* next;
 } symbol;
@@ -35,9 +39,11 @@ struct symtable* symtable_new();
 
 symbol* symtable_const(symtable* t, int v);
 
-symbol* symtable_get(symtable* t, const char * s);
+symbol* symtable_get(symtable* t, const char* s);
 
-symbol* symtable_put(symtable* t, const char * s);
+symbol* symtable_put(symtable* t, const char* s);
+
+symbol* symtable_put_string(symtable* t, const char* s);
 
 void symtable_dump(symtable* t);
 

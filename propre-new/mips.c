@@ -5,12 +5,19 @@
 //écrit la ligne qui charge le symbole s dans le registre reg
 void load_symbol(symbol* s, const char* reg, FILE* out)
 {
-    if (s->kind==NAME){
+    if (s->kind == NAME){
         fprintf(out, "lw $%s, ",reg);
-    } else {
+    }
+    else if(s->kind == STRING_SYMBOL)
+    {
+        fprintf(out, "la $%s, %s\n",reg, s->u.string.string_id);
+        return;
+    }
+    else
+    {
         fprintf(out, "li $%s, ",reg);
     }
-    symbol_dump_file(s, out);      
+    symbol_dump_file(s, out);  
     fprintf(out, "\n");
 
 }
@@ -48,11 +55,12 @@ void mips_exit(FILE* out)
 }
 
 //écrit un commentaire pour améliorer la lisibilité du code MIPS
-void mips_comment(quad_kind k, quad* q, FILE* out)
+void mips_comment(quad* q, FILE* out)
 {
     symbol* res = q->sym1;
     symbol* arg1 = q->sym2;
     symbol* arg2 = q->sym3;
+    quad_kind k = q->kind;
     switch(k)
     {
         case BOP_PLUS:
@@ -101,7 +109,14 @@ void mips_comment(quad_kind k, quad* q, FILE* out)
             break;
         case CALL_PRINT:
             fprintf(out, "#CALL_PRINT print ");
-            symbol_dump_file(res, out);
+            if(res->kind == STRING_SYMBOL)
+            {
+                fprintf(out, "%s", res->u.string.string_id);
+            }
+            else
+            {
+                symbol_dump_file(res, out);
+            }
             break;
     }
     fprintf(out, "\n");
@@ -139,9 +154,13 @@ void quad_to_MIPS(symtable* t, code* c, char* out_file)
     {
         if(scan->kind == NAME)
         {
-            fprintf(out, "\t%s", scan->u.name);
-            fprintf(out, ":");
-            fprintf(out, "\t.word 0\n");
+            fprintf(out, "\t%s:\t.word 0\n", scan->u.name);
+        }
+        else if(scan->kind == STRING_SYMBOL)
+        {
+            fprintf(out, "\t%s:\t.asciiz %s",
+                            scan->u.string.string_id,
+                            scan->u.string.content);
         }
         scan = scan->next;
     }
@@ -157,48 +176,55 @@ void quad_to_MIPS(symtable* t, code* c, char* out_file)
         switch(q->kind)
         {
             case BOP_PLUS:
-                mips_comment(BOP_PLUS, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("add", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case BOP_MINUS:
-                mips_comment(BOP_MINUS, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("sub", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case BOP_MULT:
-                mips_comment(BOP_MULT, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("mul", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case BOP_DIV:
-                mips_comment(BOP_DIV, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym2, "t0", out);
                 load_symbol(q->sym3, "t1", out);
                 mips_3reg_op("div", "t0", "t0", "t1", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case UOP_MINUS:
-                mips_comment(UOP_MINUS, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym2, "t0", out);
                 mips_2reg_op("neg", "t0", "t0", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case COPY:
-                mips_comment(COPY, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym2, "t0", out);
                 store_reg_to_symbol("t0", q->sym1, out);
                 break;
             case CALL_PRINT:
-                mips_comment(CALL_PRINT, q, out);
+                mips_comment(q, out);
                 load_symbol(q->sym1, "a0", out);
-                mips_syscall(1, out);
+                if(q->sym1->kind == STRING_SYMBOL)
+                {
+                    mips_syscall(4, out);
+                }
+                else
+                {
+                    mips_syscall(1, out);
+                }
                 break;
             default:
                 fprintf(stderr, "quad %zu non reconnus !\n",i);

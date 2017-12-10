@@ -7,14 +7,15 @@
 	
 	void dup_alloc_list_add(char* dup);
 
-	char* extract_string_content(char* string);
+	char* extract_string_content(const char* string);
 %}
 %%
 
 \n 									{ }
 "//".*								{ /* return COMMENTAIRE; */ }
 "\"".*"\""							{ 
-										char* dup = extract_string_content(yytext);
+										//char* dup = extract_string_content(yytext);
+										char* dup = strdup(yytext);
 										yylval.string = dup; 
 										dup_alloc_list_add(dup);
 										return STRING;
@@ -63,7 +64,7 @@
 
 %%
 
-char* extract_string_content(char* string)
+char* extract_string_content(const char* string)
 {
 	size_t size = strlen(string);
 	// size - 2 + 1

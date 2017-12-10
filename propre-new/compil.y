@@ -166,7 +166,8 @@ instruction:
 print_fct:
 		PRINTF '(' STRING ')'
 		{
-			$$ = ast_new_call("printf", ast_new_id($3));
+			symbol* s = symtable_put_string(t, $3);
+			$$ = ast_new_call("printf", ast_new_id(s->u.string.string_id));
 		}
 	|	PRINTI '(' expression ')'
 		{
