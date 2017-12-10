@@ -5,7 +5,7 @@ int main()
     printi(a); //0
     printf("\n");
     int b = 5;
-    int c = a * (b - 1 + 1) + 1; // = 1
+    int c = a * (b + 1 + 1) + 1; // = 1
     //int e = -d //erreur de syntaxe ';'
     /*
     test commentaire
