@@ -181,20 +181,7 @@ declaration:
 	;
 
 affectation:
-		ID '=' valeur
-		{
-			if($3->type == IDENTIFIER)
-			{
-				if(symtable_get(t, $3->u.id) == NULL)
-				{
-					char message[MAX_MESSAGE_LENGTH];
-					snprintf(message, MAX_MESSAGE_LENGTH, "Symbole '%s' non reconnus", $3->u.id);
-					error(message, yylineno);
-				}
-			}
-			$$ = ast_new_affectation($1,$3);
-		}
-	|	ID '=' operation
+		ID '=' expression
 		{
 			$$ = ast_new_affectation($1,$3);
 		}
