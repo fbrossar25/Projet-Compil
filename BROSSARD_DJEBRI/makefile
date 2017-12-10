@@ -22,6 +22,8 @@ VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 
 MARS = java -jar Mars4_5.jar
 
+THIS_DIR = $(shell basename `pwd`)
+
 #fichiers sources
 SRC = ast quads symbol error mips alloc
 OBJ := $(addsuffix .o, $(SRC))
@@ -58,14 +60,17 @@ valgrind-test: all
 vt: valgrind-test
 
 mars:
-	$(MARS) mips.s
+	$(MARS) $(MIPS)
 
-mars-test: all mars
+mars-test: test mars
 
 mrproper: clean
-	rm -f $(EXEC) y.output
+	rm -f $(EXEC) y.output $(MIPS)
 
 remake: mrproper all
 
 gdb: all
 	gdb $(EXEC)
+
+tar: mrproper
+	tar cvzf ../$(THIS_DIR).tar.gz ../$(THIS_DIR) 
