@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "lib.h"
+#include "quads.h"
 #include "symbol.h"
 #include "error.h"
 

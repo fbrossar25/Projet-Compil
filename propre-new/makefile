@@ -4,7 +4,7 @@ EXEC = compil
 #compilateur, analyseurs
 CC = gcc
 YACC = yacc -d -Wall -v
-FLEX = flex #-d
+FLEX = flex -d
 
 #flages de compilation
 LDFLAGS = -ly -ll -lfl
@@ -23,7 +23,7 @@ VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 MARS = java -jar Mars4_5.jar
 
 #fichiers sources
-SRC = ast lib symbol error mips alloc
+SRC = ast quads symbol error mips alloc
 OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 

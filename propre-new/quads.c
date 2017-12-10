@@ -1,4 +1,4 @@
-#include "lib.h"
+#include "quads.h"
 
 struct code * code_new()
 {

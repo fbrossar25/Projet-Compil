@@ -4,7 +4,7 @@
 	#include <string.h>
 
 	#include "ast.h"
-	#include "lib.h"
+	#include "quads.h"
 	#include "error.h"
 	#include "mips.h"
 	#include "alloc.h"
