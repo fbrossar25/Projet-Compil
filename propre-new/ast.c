@@ -1,88 +1,5 @@
 #include "ast.h"
 
-static ast_list* ast_alloc_list = NULL;
-
-//résout le problème d'allocation des noeuds si l'ast n'est pas complet
-static ast_list* ast_alloc_list_new()
-{
-	ast_list* new = calloc(1, sizeof(ast_list));
-	new->node = NULL;
-	new->next = NULL;
-	return new;
-}
-
-static void ast_alloc_list_add(ast* ast)
-{
-	if(ast_alloc_list == NULL)
-	{
-		ast_alloc_list = ast_alloc_list_new();
-		ast_alloc_list->node = ast;
-		return;
-	}
-
-	ast_list* scan = ast_alloc_list;
-	ast_list* new = ast_alloc_list_new();
-	new->node = ast;
-	while(scan->next != NULL)
-	{
-		scan = scan->next;
-	}
-	scan->next = new;
-}
-
-//libère les noeuds ast contenus dans ast_alloc_list
-//sans libèrer la liste elle-même
-void ast_free_ast_alloc()
-{
-	ast_list* scan = ast_alloc_list;
-	while(scan != NULL)
-	{
-		if(scan->node != NULL)
-		{
-			ast* ast = scan->node;
-			if(get_error_count() != 0)
-			{
-				//on ne libère que les opérateurs car
-				//les id sont deja listé dans
-				//dup_alloc_list du fichier YACC
-				switch(ast->type)
-				{
-					case UN_OP:
-						free(ast->u.unop.op);
-						ast->u.unop.op = NULL;
-						break;
-					case BIN_OP:
-						free(ast->u.binop.op);
-						ast->u.binop.op = NULL;
-						break;
-					default:
-						; //rien mais erreur si vide
-				}
-				free(ast);
-				ast = NULL;
-			}
-			else
-			{
-				ast_free(ast);
-			}
-		}
-		scan = scan->next;
-	}
-}
-
-//libère la liste des ast_list sans libèrer les noeuds
-void ast_free_ast_alloc_list()
-{
-	ast_list* scan = ast_alloc_list;
-	ast_list* tmp = scan;
-	while(scan != NULL)
-	{
-		scan = scan->next;
-		free(tmp);
-		tmp = scan;
-	}
-}
-
 void ast_free_binop(ast* ast);
 void ast_free_unop(ast* ast);
 void ast_free_for(ast* ast);
@@ -94,20 +11,21 @@ void ast_free_int(ast* ast);
 void ast_free_action(ast* ast);
 void ast_free_call(ast* ast);
 
-void ast_print_binop(ast* ast, int tab);
-void ast_print_unop(ast* ast, int tab);
-void ast_print_for(ast* ast, int tab);
-void ast_print_if(ast* ast, int tab);
-void ast_print_fct(ast* ast, int tab);
-void ast_print_affect(ast* ast, int tab);
-void ast_print_identifier(ast* ast, int tab);
-void ast_print_int(ast* ast, int tab);
-void ast_print_action(ast* ast, int tab);
-void ast_print_call(ast* ast, int tab);
+void ast_print_binop(ast* ast, size_t tab);
+void ast_print_unop(ast* ast, size_t tab);
+void ast_print_for(ast* ast, size_t tab);
+void ast_print_if(ast* ast, size_t tab);
+void ast_print_fct(ast* ast, size_t tab);
+void ast_print_affect(ast* ast, size_t tab);
+void ast_print_identifier(ast* ast, size_t tab);
+void ast_print_int(ast* ast, size_t tab);
+void ast_print_action(ast* ast, size_t tab);
+void ast_print_call(ast* ast, size_t tab);
 
-void print_indent(int indent)
+//permet de faire plusieurs tabulations
+static void print_indent(size_t indent)
 {
-	for(int i=0; i<indent; i++)
+	for(size_t i=0; i<indent; i++)
 	{
 		printf("\t");
 	}
@@ -116,9 +34,9 @@ void print_indent(int indent)
 //alloue un nouvel ast avec type = UNDEFINED
 ast* ast_alloc()
 {
-	ast* new = calloc(1, sizeof(ast)); // calloc initialise tout à 0
+	ast* new = calloc(1, sizeof(ast));
 	new->type = UNDEFINED;
-	ast_alloc_list_add(new);
+	add_alloc(new);
 	return new;
 }
 
@@ -152,6 +70,7 @@ ast* ast_new_fonction(char* name, ast* action, ast* retour)
 	ast* new = ast_alloc();
 	new->type = FCT;
 	new->u.fct.name = strdup(name);
+	add_alloc(new->u.fct.name);
 	new->u.fct.action = action;
 	new->u.fct.retour = retour;
 	return new;
@@ -192,6 +111,7 @@ ast* ast_new_unop(char* op, ast* fils)
 	ast* new = ast_alloc();
 	new->type = UN_OP;
 	new->u.unop.op = strdup(op);
+	add_alloc(new->u.unop.op);
 	new->u.unop.fils = fils;
 	return new;
 }
@@ -201,6 +121,7 @@ ast* ast_new_binop(char* op, ast* left, ast* right)
 	ast* new = ast_alloc();
 	new->type = BIN_OP;
 	new->u.binop.op = strdup(op);
+	add_alloc(new->u.binop.op);
 	new->u.binop.left = left;
 	new->u.binop.right = right;
 	return new;
@@ -215,7 +136,7 @@ ast* ast_new_action(ast* instruction, ast* action)
 	return new;
 }
 
-
+//génères les quads en parcourant l'ast
 struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 {
 	struct symbol* s = NULL;
@@ -280,13 +201,12 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				}
 				break;
 			case FOR_STMT:
-				//TODO
+				fprintf(stderr,"@gencode Erreur : la gestion des structures de contrôles n'est pas encore implémentée\n");
 				break;
 			case IF_STMT:
-				//TODO
+				fprintf(stderr,"@gencode Erreur : la gestion des structures de contrôles n'est pas encore implémentée\n");
 				break;
 			case FCT:
-				s = symtable_put(t, src->u.fct.name);
 				astGencode(src->u.fct.action,t, c);
 				break;
 			case AFFECT:
@@ -304,7 +224,7 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				s = astGencode(src->u.action.action, t, c);
 				break;
 			case WHILE_STMT:
-				//TODO
+				fprintf(stderr,"@gencode Erreur : la gestion des structures de contrôles n'est pas encore implémentée\n");
 				break;
 			case CALL:
 				if( strcmp(src->u.call.name, "printf") == 0 ||
@@ -334,6 +254,7 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 
 //Fait appel aux fonctions ast_free_[TYPE AST]
 //puis appel free avec ast donné en paramètre
+//pas nécessaire si on fait appel à ast_alloc_free()
 void ast_free(ast *ast)
 {
 	if(ast == NULL)
@@ -384,7 +305,7 @@ void ast_free(ast *ast)
 	}
 }
 
-void ast_print(ast* ast, int tab)
+void ast_print(ast* ast, size_t tab)
 {
 	if(ast == NULL)
 	{
@@ -499,26 +420,25 @@ void ast_free_action(ast* ast)
 
 void ast_free_call(ast* ast)
 {
-	//free(ast->u.call.name); //deja free dans yylex_destroy()
 	ast->u.call.name = NULL;
 	ast_free(ast->u.call.arg);
 }
 
 
-void ast_print_binop(ast* ast, int tab)
+void ast_print_binop(ast* ast, size_t tab)
 {
 	printf("%s\n",ast->u.binop.op);
 	ast_print(ast->u.binop.left, tab+1);
 	ast_print(ast->u.binop.right, tab+1);
 }
 
-void ast_print_unop(ast* ast, int tab)
+void ast_print_unop(ast* ast, size_t tab)
 {
 	printf("%s\n",ast->u.unop.op);
 	ast_print(ast->u.unop.fils, tab+1);
 }
 
-void ast_print_for(ast* ast, int tab)
+void ast_print_for(ast* ast, size_t tab)
 {
 	printf("FOR\n");
 	print_indent(tab);
@@ -535,7 +455,7 @@ void ast_print_for(ast* ast, int tab)
 	ast_print(ast->u.forstmt.action, tab+1);
 }
 
-void ast_print_if(ast* ast, int tab)
+void ast_print_if(ast* ast, size_t tab)
 {
 	printf("IF :\n");
 	ast_print(ast->u.ifstmt.condition, tab+1);
@@ -547,7 +467,7 @@ void ast_print_if(ast* ast, int tab)
 	ast_print(ast->u.ifstmt.els, tab+1);
 }
 
-void ast_print_fct(ast* ast, int tab)
+void ast_print_fct(ast* ast, size_t tab)
 {
 	printf("FONCTION %s :\n", ast->u.fct.name);
 	ast_print(ast->u.fct.action, tab+1);
@@ -556,30 +476,30 @@ void ast_print_fct(ast* ast, int tab)
 	ast_print(ast->u.fct.retour, tab+1);
 }
 
-void ast_print_affect(ast* ast, int tab)
+void ast_print_affect(ast* ast, size_t tab)
 {
 	printf("=\n");
 	ast_print(ast->u.affect.id, tab+1);
 	ast_print(ast->u.affect.expr, tab+1);
 }
 
-void ast_print_identifier(ast* ast, int tab)
+void ast_print_identifier(ast* ast, size_t tab)
 {
 	printf("%s\n", ast->u.id);
 }
 
-void ast_print_int(ast* ast, int tab)
+void ast_print_int(ast* ast, size_t tab)
 {
 	printf("%d\n", ast->u.nombre);
 }
 
-void ast_print_action(ast* ast, int tab)
+void ast_print_action(ast* ast, size_t tab)
 {
 	ast_print(ast->u.action.instruction, tab);
 	ast_print(ast->u.action.action, tab);
 }
 
-void ast_print_call(ast* ast, int tab)
+void ast_print_call(ast* ast, size_t tab)
 {
 	printf("call %s\n", ast->u.call.name);
 	ast_print(ast->u.call.arg, tab+1);

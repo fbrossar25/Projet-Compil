@@ -70,6 +70,7 @@ symbol* symtable_put(symtable* t, const char * s)
     symbol* new = symbol_new();
     new->kind = NAME;
     new->u.name = strdup(s);
+    add_alloc(new->u.name);
     if(t->first == NULL) //si table vide
     {
         t->first = new;
@@ -96,6 +97,7 @@ symbol* symtable_put_string(symtable* t, char* string_content)
     snprintf(string_id, TEMP_NAME_LENGTH_LIMIT, "str%zu", string_num);
 
     new->u.string.string_id = strdup(string_id);
+    add_alloc(new->u.string.string_id);
     new->u.string.content = string_content;
 
     if(t->first == NULL)
@@ -169,23 +171,6 @@ void symbol_dump_file(symbol* s, FILE* out)
     }
 }
 
-static void symbol_free(symbol* s)
-{
-    switch(s->kind)
-    {
-        case CONSTANT:
-            //rien à faire
-            break;
-        case NAME:
-            free(s->u.name);
-            break;
-        case STRING_SYMBOL:
-            free(s->u.string.content);
-            break;
-    }
-    free(s);
-}
-
 void symtable_free(symtable* t)
 {
     symbol* scan = t->first;
@@ -193,7 +178,7 @@ void symtable_free(symtable* t)
     while(tmp != NULL)
     {
         scan = scan->next;
-        symbol_free(tmp);
+        free(tmp);
         tmp = scan;
     }
     free(t);

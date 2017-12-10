@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "alloc.h"
+
 //4 est le minimum pour écrire tmp
 //on peut donc déduire le nombre max de temporaire :
 //max = 10^(TEMP_NAME_LENGTH_LIMIT - 3)

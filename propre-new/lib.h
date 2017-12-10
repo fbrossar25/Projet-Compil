@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "symbol.h"
+#include "alloc.h"
 
 /* QUADRUPLETS ET CODE */
 

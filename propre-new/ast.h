@@ -80,7 +80,7 @@ ast* ast_new_binop(char* op, ast* left, ast* right);
 ast* ast_new_action(ast* instruction, ast* action);
 ast* ast_new_call(char* name, ast* arg);
 struct symbol* astGencode(ast* src, struct symtable* t, struct code* c);
-void ast_print(ast* ast, int tab);
+void ast_print(ast* ast, size_t tab);
 void ast_free(ast* ast);
 void ast_free_ast_alloc();
 void ast_free_ast_alloc_list();

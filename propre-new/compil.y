@@ -7,6 +7,7 @@
 	#include "lib.h"
 	#include "error.h"
 	#include "mips.h"
+	#include "alloc.h"
 
 	//pour éviter un warning avec yylex
 	#if YYBISON
@@ -34,16 +35,6 @@
 	ast* root = NULL;
 
 	int syntax_error = 0;
-
-	typedef struct dup_list
-	{
-		char* dup;
-		struct dup_list* next;
-	} dup_list;
-
-	static dup_list* dup_alloc_list = NULL;
-
-	void dup_alloc_list_add(char* dup);
 %}
 
 %error-verbose
@@ -354,83 +345,12 @@ comparaison:
 
 %%
 
-dup_list* dup_alloc_list_new()
-{
-	dup_list* new = calloc(1,sizeof(dup_list));
-	new->dup = NULL;
-	new->next = NULL;
-	return new;
-}
-
-//En cas d'erreur il se peut que les ID récupèrer doivent être libèrés
-//On doit donc systématiquement les lister
-void dup_alloc_list_add(char* dup)
-{
-	if(dup_alloc_list == NULL)
-	{
-		dup_alloc_list = dup_alloc_list_new();
-		dup_alloc_list->dup = dup;
-		return;
-	}
-
-	dup_list* scan = dup_alloc_list;
-	dup_list* new = dup_alloc_list_new();
-	new->dup = dup;
-	while(scan->next != NULL)
-	{
-		scan = scan->next;
-	}
-	scan->next = new;
-}
-
-//libère la liste et son contenus
-void dup_alloc_list_free()
-{
-	dup_list* scan = dup_alloc_list;
-	dup_list* tmp = scan;
-	while(scan != NULL)
-	{
-		scan = scan->next;
-		if(tmp->dup != NULL)
-		{
-			free(tmp->dup);
-			tmp->dup = NULL;
-		}
-		free(tmp);
-		tmp = scan;
-	}
-}
-
-//ne libère que la liste, pas son contenus
-void dup_alloc_list_free_list()
-{
-	dup_list* scan = dup_alloc_list;
-	dup_list* tmp = scan;
-	while(scan != NULL)
-	{
-		scan = scan->next;
-		free(tmp);
-		tmp = scan;
-	}
-}
-
 //libère toutes les allocation sauf celles de yacc
 void cleanup()
 {
-	ast_free(root);
-	if(get_error_count() != 0 && syntax_error != 0)
-	{
-		//en cas d'erreur les noeuds de l'ast sont libérés ici
-		ast_free_ast_alloc();
-		dup_alloc_list_free();
-	}
-	else
-	{
-		dup_alloc_list_free_list();
-	}
-	ast_free_ast_alloc_list();
 	symtable_free(t);
 	code_free(c);
+	alloc_list_free(); //se charge de libèrer l'ast et tout les dup
 }
 
 //Message d'erreur perso si erreur de syntaxe détectée par yacc

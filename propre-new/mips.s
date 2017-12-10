@@ -1,9 +1,10 @@
 .data
-	a:	.word 0
-	b:	.word 0
-	c:	.word 0
+	a_var:	.word 0
+	b_var:	.word 0
+	c_var:	.word 0
 	str0:	.asciiz "Hello world !\n"
-    tmp0:	.word 0
+	str1:	.asciiz "\n"
+	tmp0:	.word 0
 	tmp1:	.word 0
 	tmp2:	.word 0
 	tmp3:	.word 0
@@ -50,16 +51,16 @@ lw $t1, tmp1
 add $t0, $t0, $t1
 sw $t0, tmp0
 
-#COPY a <- tmp0
+#COPY a_var <- tmp0
 lw $t0, tmp0
-sw $t0, a
+sw $t0, a_var
 
-#COPY b <- 5
+#COPY b_var <- 5
 li $t0, 5
-sw $t0, b
+sw $t0, b_var
 
-#BOP_MINUS tmp7 <- b - 1
-lw $t0, b
+#BOP_MINUS tmp7 <- b_var - 1
+lw $t0, b_var
 li $t1, 1
 sub $t0, $t0, $t1
 sw $t0, tmp7
@@ -70,55 +71,55 @@ li $t1, 1
 add $t0, $t0, $t1
 sw $t0, tmp6
 
-#BOP_MULT tmp5 <- a * tmp6
-lw $t0, a
+#BOP_MULT tmp5 <- a_var * tmp6
+lw $t0, a_var
 lw $t1, tmp6
 mul $t0, $t0, $t1
 sw $t0, tmp5
 
-#COPY c <- tmp5
+#COPY c_var <- tmp5
 lw $t0, tmp5
-sw $t0, c
+sw $t0, c_var
 
-#BOP_PLUS tmp8 <- c + 1
-lw $t0, c
+#BOP_PLUS tmp8 <- c_var + 1
+lw $t0, c_var
 li $t1, 1
 add $t0, $t0, $t1
 sw $t0, tmp8
 
-#COPY c <- tmp8
+#COPY c_var <- tmp8
 lw $t0, tmp8
-sw $t0, c
+sw $t0, c_var
 
-#BOP_MINUS tmp9 <- c - 1
-lw $t0, c
+#BOP_MINUS tmp9 <- c_var - 1
+lw $t0, c_var
 li $t1, 1
 sub $t0, $t0, $t1
 sw $t0, tmp9
 
-#COPY c <- tmp9
+#COPY c_var <- tmp9
 lw $t0, tmp9
-sw $t0, c
+sw $t0, c_var
 
-#BOP_PLUS tmp10 <- c + 1
-lw $t0, c
+#BOP_PLUS tmp10 <- c_var + 1
+lw $t0, c_var
 li $t1, 1
 add $t0, $t0, $t1
 sw $t0, tmp10
 
-#COPY c <- tmp10
+#COPY c_var <- tmp10
 lw $t0, tmp10
-sw $t0, c
+sw $t0, c_var
 
-#BOP_MINUS tmp11 <- c - 1
-lw $t0, c
+#BOP_MINUS tmp11 <- c_var - 1
+lw $t0, c_var
 li $t1, 1
 sub $t0, $t0, $t1
 sw $t0, tmp11
 
-#COPY c <- tmp11
+#COPY c_var <- tmp11
 lw $t0, tmp11
-sw $t0, c
+sw $t0, c_var
 
 #CALL_PRINT print str0
 la $a0, str0
@@ -130,8 +131,13 @@ li $a0, 42
 li $v0, 1
 syscall
 
-#CALL_PRINT print c
-lw $a0, c
+#CALL_PRINT print str1
+la $a0, str1
+li $v0, 4
+syscall
+
+#CALL_PRINT print c_var
+lw $a0, c_var
 li $v0, 1
 syscall
 

@@ -14,7 +14,7 @@ CFLAGS = -Wall -std=gnu99 -g -Wno-unused-function
 GENERATED = lex.yy.c y.tab.c y.tab.h
 
 #fichier d'entrée pour make test
-INPUT = input.txt
+INPUT = input.c
 
 MIPS = mips.s
 
@@ -23,14 +23,14 @@ VALGRIND = --track-origins=yes --leak-check=full --show-leak-kinds=all
 MARS = java -jar Mars4_5.jar
 
 #fichiers sources
-SRC = ast lib symbol error mips
+SRC = ast lib symbol error mips alloc
 OBJ := $(addsuffix .o, $(SRC))
 SRC := $(addsuffix .c, $(SRC))
 
 #compilation du projet
 all: mrproper $(EXEC)
 
-$(EXEC): $(OBJ) $(GENERATED)
+$(EXEC): $(GENERATED) $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	rm -f *.o
 
