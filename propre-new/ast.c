@@ -313,7 +313,8 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 					s = astGencode(src->u.call.arg, t, c);
 					if(s == NULL)
 					{
-						fprintf(stderr, "@gencode Erreur fatale : l'argument de print est NULL\n");
+						fprintf(stderr, "@gencode Erreur fatale : l'argument de print est NULL\nAST correspondant:\n");
+						ast_print(src->u.call.arg, 0);
 						exit(EXIT_FAILURE);
 					}
 					gencode(c, CALL_PRINT, s, NULL, NULL);

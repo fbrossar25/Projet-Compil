@@ -6,13 +6,15 @@
   	#include "y.tab.h"
 	
 	void dup_alloc_list_add(char* dup);
+
+	char* extract_string_content(char* string);
 %}
 %%
 
 \n 									{ }
 "//".*								{ /* return COMMENTAIRE; */ }
 "\"".*"\""							{ 
-										char* dup = strdup(yytext);
+										char* dup = extract_string_content(yytext);
 										yylval.string = dup; 
 										dup_alloc_list_add(dup);
 										return STRING;
@@ -60,3 +62,18 @@
 . 									{ printf("Car. inconnu: %s\n", yytext); }
 
 %%
+
+char* extract_string_content(char* string)
+{
+	size_t size = strlen(string);
+	// size - 2 + 1
+	// - 2 car on enlève les ", +1 pour avoir \0 à la fin
+	size_t content_size = size - 2;
+	char* content = calloc(content_size + 1, sizeof(char));
+	for(size_t i=0; i<content_size; i++)
+	{
+		content[i] = string[i + 1];
+	}
+	content[content_size] = '\0';
+	return content;
+}
