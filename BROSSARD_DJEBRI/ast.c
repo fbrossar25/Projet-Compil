@@ -183,7 +183,8 @@ struct symbol* astGencode(ast* src,struct symtable* t, struct code* c)
 				s = newtemp(t);
 				if(strcmp(src->u.unop.op, "-") == 0)
 				{
-					gencode(c, UOP_MINUS, s, astGencode(src->u.binop.right, t, c), NULL);
+					//correction de dernière minute
+					gencode(c, UOP_MINUS, s, astGencode(src->u.unop.fils, t, c), NULL);
 				}
 				else if(strcmp(src->u.unop.op, "++") == 0)
 				{
