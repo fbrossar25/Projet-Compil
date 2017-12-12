@@ -10,7 +10,7 @@ int main() {
   int b;
   int c;
   a = 50;
-  b = -10; //T_T
+  b = -10;
   c = a + b + 2 * 1;
   printi(c);
   printf("\n");

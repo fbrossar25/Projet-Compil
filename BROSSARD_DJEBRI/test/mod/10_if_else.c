@@ -12,7 +12,7 @@ int main() {
   a = -15;
   b = 5;
   c = -2 * a;
-  if ((a == b) || (a > b)) {
+  if (a == b || a > b) {
     b = b - 5;
     c = b - a;
     c = c - 2;
